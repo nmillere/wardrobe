@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
 <title>Deep Autumn Capsule Wardrobe</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -31,11 +32,11 @@
   --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 15px; }
-body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+html { font-size: 15px; height: 100%; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
 
 /* ── Header ── */
-.header { background: var(--text); color: #FAF7F2; padding: 2rem 2.5rem 1.75rem; display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; }
+.header { background: var(--text); color: #FAF7F2; padding: 1.5rem 2rem 1.25rem; display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; }
 .header-left h1 { font-family: 'DM Serif Display', serif; font-size: 2rem; font-weight: 400; letter-spacing: -.01em; line-height: 1.1; }
 .header-left p { font-size: .78rem; color: rgba(250,247,242,.5); margin-top: .35rem; letter-spacing: .08em; text-transform: uppercase; }
 .header-right { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
@@ -62,7 +63,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .sort-select { padding: .45rem .8rem; border: 1px solid var(--border-mid); border-radius: var(--radius-sm); font-size: .78rem; font-family: inherit; background: var(--bg); color: var(--text-mid); cursor: pointer; outline: none; }
 
 /* ── Main layout ── */
-.main { padding: 1.5rem; max-width: 1400px; margin: 0 auto; }
+.main { padding: 1rem 1.25rem; max-width: 1400px; margin: 0 auto; }
 
 /* ── Section ── */
 .section { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 1rem; overflow: hidden; box-shadow: var(--shadow); }
@@ -229,9 +230,9 @@ tr.item-row:hover td { background: var(--bg); }
     </div>
     <div id="p-gaps">
       <div class="gap-list">
-        <div class="gap-item"><span class="gpri gph">High</span>Non-denim work bottom — all 3 work bottoms are dark denim. A camel trouser, olive chino, or dark brown wide-leg pant unlocks an entirely new tier of workwear looks.</div>
-        <div class="gap-item"><span class="gpri gph">High</span>DA work outerwear — no blazer or structured jacket for the office. Needed to layer over tops and elevate denim into polished Apple office looks.</div>
-        <div class="gap-item"><span class="gpri gpl">Low</span>Warm-toned lifestyle sneaker — camel sandal partially solves footwear. A tan, gum-sole, or warm white sneaker extends year-round utility.</div>
+        <div class="gap-item"><span class="gpri gph">High</span>DA work outerwear — no blazer or structured jacket for the office. A camel, olive, or tobacco-brown blazer is the highest-leverage missing piece; it converts dark denim + any DA top into a polished Apple-office look.</div>
+        <div class="gap-item"><span class="gpri gph">High</span>Non-denim work bottom — all 3 work bottoms are dark denim. A camel trouser, olive chino, or dark brown wide-leg pant unlocks a new tier of workwear looks, especially paired with the rust Straightforward button-down.</div>
+        <div class="gap-item"><span class="gpri gpl">Low</span>Warm-toned lifestyle sneaker — the camel sandal partially solves footwear. A tan, gum-sole, or warm white sneaker extends year-round utility when sandals aren't practical.</div>
       </div>
     </div>
   </div>
@@ -394,6 +395,14 @@ const DEFAULT_ITEMS = [
   {id:54,cat:'active',brand:'Nike',name:'Swoosh Medium Support Bra',color:'Black/White',hex:'#1a1a1a',score:6,cross:'No',notes:'White details add cool contrast. Keep for sport only.',status:''},
   {id:55,cat:'active',brand:'Asics',name:"Women's GT-2000 14",color:'Oatmeal/White',hex:'#D4C4A8',score:7,cross:'Partial',notes:'Warm oatmeal tone is DA-adjacent. Pairs with casual DA looks.',status:''},
   {id:56,cat:'active',brand:'Nike',name:"Women's Swift Repel Packable Novelty Jacket",color:'Black/Anthracite',hex:'#1a1a1a',score:7,cross:'Partial',notes:'Packable utility. Works as an outer layer in casual contexts.',status:''},
+  {id:57,cat:'work',brand:'Straightforward',name:'Oversized button-down shirt',color:'Rust/terracotta',hex:'#8B3A2A',score:9,cross:'Yes',notes:'Excellent DA color. Fills biggest work top gap — wear with dark denim or wide leg trousers.',status:''},
+  {id:58,cat:'casual',brand:'Scotch & Soda',name:'Lace-up cropped pullover (Endless Horizons)',color:'Light heather grey',hex:'#C8C8C0',score:5,cross:'Partial',notes:'Conditional. Cool-leaning grey; pair with strong DA bottoms to ground the look.',status:''},
+  {id:59,cat:'casual',brand:'7115 by Szeki',name:'Linen henley pullover',color:'Dark navy',hex:'#1A2A4A',score:3,cross:'No',notes:'Off-palette. Cool blue clashes with DA warm coloring. Lounge or home only.',status:''},
+  {id:60,cat:'casual',brand:'Madewell',name:'Corduroy shacket',color:'Dusty mauve-brown',hex:'#8B6355',score:7,cross:'Partial',notes:'Warm dusty undertones. Good casual outerwear layer; pairs well with DA earth tones.',status:''},
+  {id:61,cat:'casual',brand:'Fear of God Essentials',name:'Chunky turtleneck sweater',color:'Medium heather grey',hex:'#888880',score:5,cross:'Partial',notes:'Conditional. Works with strong DA anchors like rust or camel. Avoid pairing with other cool tones.',status:''},
+  {id:62,cat:'casual',brand:'A&F',name:'Open-knit sleeveless sweater',color:'Cool sage/mint',hex:'#8FBFB0',score:4,cross:'No',notes:'Off-palette. Cool sage similar to ocean green Sunday pieces. Casual only.',status:''},
+  {id:63,cat:'casual',brand:'Madewell',name:'Oversized linen shirt',color:'Bright white',hex:'#F5F5F0',score:5,cross:'Partial',notes:'Bright white is cool for DA. Works best open as a layering piece over DA tops.',status:''},
+  {id:64,cat:'casual',brand:'Superdry',name:'Geometric print crop top',color:'Black/white print',hex:'#1a1a1a',score:6,cross:'Partial',notes:'Black base is ok; white geometric print adds cool contrast. Pair with warm DA bottoms.',status:''},
 ];
 
 let items = JSON.parse(localStorage.getItem('da-wardrobe') || 'null') || DEFAULT_ITEMS;
@@ -778,6 +787,16 @@ function loadFromCSV() {
 document.getElementById('gh-modal-bg').addEventListener('click', function(e) { if (e.target===this) closeGHSettings(); });
 document.getElementById('load-modal-bg').addEventListener('click', function(e) { if (e.target===this) closeLoadModal(); });
 document.getElementById('modal-bg').addEventListener('click', function(e) { if (e.target===this) closeModal(); });
+
+(function seedGHConfig() {
+  // Enter your GitHub credentials via the ⚙ GitHub button in the header.
+  // Do NOT hardcode a token here — anyone viewing page source can read it.
+  if (!getGHConfig().user) {
+    localStorage.setItem('gh-config', JSON.stringify({
+      user: '', repo: 'wardrobe', token: '', file: 'wardrobe.csv'
+    }));
+  }
+})();
 
 updateGHStatus();
 render();
