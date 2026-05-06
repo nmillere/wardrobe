@@ -799,8 +799,22 @@ document.getElementById('modal-bg').addEventListener('click', function(e) { if (
   }
 })();
 
+async function autoLoad() {
+  try {
+    const res = await fetch('https://raw.githubusercontent.com/nmillere/wardrobe/main/wardrobe.csv?t=' + Date.now());
+    if (!res.ok) return;
+    const loaded = parseCSV(await res.text());
+    if (!loaded.length) return;
+    items = loaded;
+    nextId = Math.max(...items.map(i => i.id), 0) + 1;
+    save();
+    render();
+  } catch(e) { /* fall back to localStorage */ }
+}
+
 updateGHStatus();
 render();
+autoLoad();
 </script>
 </body>
 </html>
