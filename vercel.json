@@ -1,6 +1,6 @@
 {
   "buildCommand": "",
-  "outputDirectory": ".",
+  "outputDirectory": "public",
   "functions": {
     "api/mcp.ts": { "maxDuration": 60 }
   }
