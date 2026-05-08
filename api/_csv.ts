@@ -77,7 +77,7 @@ export async function fetchCSV(token: string): Promise<{ items: WardrobeItem[]; 
   });
   if (!res.ok) throw new Error(`GitHub GET failed: ${res.status} ${await res.text()}`);
   const data = (await res.json()) as { content: string; sha: string };
-  const csv = Buffer.from(data.content.replace(/\n/g, ""), "base64").toString("utf-8");
+  const csv = Buffer.from(data.content.replace(/\n/g, ""), "base64").toString("utf-8").replace(/\r\n/g, "\n");
   return { items: parseCSV(csv), sha: data.sha };
 }
 
