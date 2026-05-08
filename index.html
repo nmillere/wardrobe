@@ -54,14 +54,18 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .metric-sub { font-size: .72rem; color: var(--text-light); margin-top: .2rem; }
 
 /* ── Toolbar ── */
-.toolbar { display: flex; align-items: center; gap: .75rem; padding: 1rem 1.5rem; background: var(--surface); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.toolbar { display: flex; align-items: center; gap: .5rem; padding: 1rem 1.5rem; background: var(--surface); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
 .search-wrap { flex: 1; min-width: 200px; position: relative; }
 .search-wrap input { width: 100%; padding: .55rem .9rem .55rem 2.2rem; border: 1px solid var(--border-mid); border-radius: var(--radius-sm); font-size: .82rem; font-family: inherit; background: var(--bg); color: var(--text); outline: none; }
 .search-wrap input:focus { border-color: var(--accent); }
 .search-icon { position: absolute; left: .7rem; top: 50%; transform: translateY(-50%); font-size: .85rem; opacity: .4; pointer-events: none; }
-.filter-btn { padding: .45rem .9rem; border: 1px solid var(--border-mid); border-radius: var(--radius-sm); font-size: .78rem; font-family: inherit; background: var(--bg); color: var(--text-mid); cursor: pointer; transition: all .15s; white-space: nowrap; }
+.filter-tag { padding: .38rem .8rem; border: 1px solid var(--border-mid); border-radius: 20px; font-size: .75rem; font-family: inherit; background: var(--bg); color: var(--text-mid); cursor: pointer; transition: all .15s; white-space: nowrap; }
+.filter-tag:hover { border-color: var(--text); color: var(--text); }
+.filter-tag.active { background: var(--text); color: #FAF7F2; border-color: var(--text); }
+.filter-btn { padding: .38rem .8rem; border: 1px solid var(--border-mid); border-radius: var(--radius-sm); font-size: .75rem; font-family: inherit; background: var(--bg); color: var(--text-mid); cursor: pointer; transition: all .15s; white-space: nowrap; }
 .filter-btn:hover, .filter-btn.active { background: var(--text); color: #FAF7F2; border-color: var(--text); }
-.sort-select { padding: .45rem .8rem; border: 1px solid var(--border-mid); border-radius: var(--radius-sm); font-size: .78rem; font-family: inherit; background: var(--bg); color: var(--text-mid); cursor: pointer; outline: none; }
+.toolbar-sep { width: 1px; height: 20px; background: var(--border-mid); flex-shrink: 0; }
+.sort-select { padding: .38rem .8rem; border: 1px solid var(--border-mid); border-radius: var(--radius-sm); font-size: .75rem; font-family: inherit; background: var(--bg); color: var(--text-mid); cursor: pointer; outline: none; }
 
 /* ── Main layout ── */
 .main { padding: 1rem 1.25rem; max-width: 1400px; margin: 0 auto; }
@@ -70,15 +74,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--t
 .section { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); margin-bottom: 1rem; overflow: hidden; box-shadow: var(--shadow); }
 .sec-header { display: flex; align-items: center; justify-content: space-between; padding: .9rem 1.25rem; cursor: pointer; user-select: none; border-bottom: 1px solid var(--border); transition: background .15s; }
 .sec-header:hover { background: var(--bg); }
-.sec-title { display: flex; align-items: center; gap: .6rem; font-size: .9rem; font-weight: 500; }
+.sec-title { font-size: .9rem; font-weight: 500; }
 .sec-right { display: flex; align-items: center; gap: .75rem; }
 .sec-count { font-size: .75rem; color: var(--text-light); }
 .chevron { font-size: .7rem; color: var(--text-light); transition: transform .2s; display: inline-block; }
 .chevron.open { transform: rotate(90deg); }
-.cat-pill { font-size: .68rem; padding: 2px 8px; border-radius: 20px; font-weight: 500; }
-.pill-work { background: var(--olive-soft); color: var(--olive); }
-.pill-casual { background: var(--gold-soft); color: var(--gold); }
-.pill-active { background: #E6F1FB; color: #185FA5; }
 
 /* ── Table ── */
 .tbl-wrap { overflow-x: auto; }
@@ -87,18 +87,24 @@ th { font-size: .68rem; font-weight: 500; text-transform: uppercase; letter-spac
 td { font-size: .8rem; padding: .6rem 1rem; border-bottom: 1px solid var(--border); vertical-align: middle; color: var(--text); line-height: 1.35; }
 tr:last-child td { border-bottom: none; }
 tr.item-row:hover td { background: var(--bg); }
-.col-name { width: 24%; }
+.col-name { width: 26%; }
 .col-brand { width: 11%; }
 .col-color { width: 14%; }
-.col-score { width: 12%; }
-.col-cross { width: 9%; }
-.col-notes { width: 22%; }
+.col-score { width: 13%; }
+.col-notes { width: 28%; }
 .col-act { width: 8%; }
 .grp-row td { font-size: .67rem; font-weight: 500; text-transform: uppercase; letter-spacing: .07em; color: var(--text-light); background: var(--surface2); padding: .35rem 1rem; border-bottom: 1px solid var(--border); }
 .row-flag { background: rgba(252,235,235,.25); }
 .row-star { background: rgba(234,243,222,.25); }
 .row-updated { background: rgba(250,238,218,.25); }
 .row-incoming { background: rgba(238,237,254,.25); }
+
+/* ── Tag chips (on rows) ── */
+.item-tags { margin-top: 3px; display: flex; flex-wrap: wrap; gap: 3px; }
+.tag-chip { font-size: .63rem; padding: 1px 6px; border-radius: 12px; font-weight: 500; display: inline-flex; align-items: center; gap: 2px; }
+.tag-context { background: var(--olive-soft); color: var(--olive); }
+.tag-type { background: #E6F1FB; color: #185FA5; }
+.tag-custom { background: var(--surface2); color: var(--text-mid); }
 
 /* ── Score bar ── */
 .score-bar { display: flex; align-items: center; gap: 6px; }
@@ -107,11 +113,6 @@ tr.item-row:hover td { background: var(--bg); }
 .score-num { font-size: .72rem; font-weight: 500; min-width: 24px; }
 .swatch-cell { display: flex; align-items: center; gap: 6px; }
 .swatch { width: 11px; height: 11px; border-radius: 50%; border: 1px solid rgba(0,0,0,.12); flex-shrink: 0; }
-
-/* ── Cross badges ── */
-.cx-yes { color: var(--score-high); font-size: .75rem; font-weight: 500; }
-.cx-partial { color: var(--score-mid); font-size: .75rem; font-weight: 500; }
-.cx-no { color: var(--text-light); font-size: .75rem; }
 
 /* ── Status badges ── */
 .badge { display: inline-block; font-size: .65rem; padding: 1px 6px; border-radius: 4px; font-weight: 500; margin-left: 4px; }
@@ -144,7 +145,7 @@ tr.item-row:hover td { background: var(--bg); }
 /* ── Modal ── */
 .modal-bg { display: none; position: fixed; inset: 0; background: rgba(28,23,20,.45); z-index: 200; align-items: center; justify-content: center; padding: 1rem; }
 .modal-bg.open { display: flex; }
-.modal { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 1.75rem; width: 480px; max-width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 40px rgba(0,0,0,.18); }
+.modal { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 1.75rem; width: 520px; max-width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 40px rgba(0,0,0,.18); }
 .modal h3 { font-family: 'DM Serif Display', serif; font-size: 1.3rem; font-weight: 400; margin-bottom: 1.25rem; color: var(--text); }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
 .form-full { grid-column: 1/-1; }
@@ -160,8 +161,25 @@ tr.item-row:hover td { background: var(--bg); }
 .btn-save { padding: .55rem 1.4rem; border: none; border-radius: var(--radius-sm); font-size: .82rem; font-family: inherit; background: var(--accent); color: #fff; cursor: pointer; font-weight: 500; }
 .btn-save:hover { background: #9e3d13; }
 
-/* ── Empty state ── */
+/* ── Tag picker (in modal form) ── */
+.tag-picker { border: 1px solid var(--border-mid); border-radius: var(--radius-sm); padding: .75rem; background: var(--bg); }
+.tag-picker-group { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; margin-bottom: .5rem; }
+.tag-picker-group:last-of-type { margin-bottom: 0; }
+.tpl { font-size: .63rem; text-transform: uppercase; letter-spacing: .07em; color: var(--text-light); min-width: 52px; }
+.tag-pick-btn { padding: .28rem .7rem; border: 1px solid var(--border-mid); border-radius: 20px; font-size: .73rem; font-family: inherit; background: var(--surface); color: var(--text-mid); cursor: pointer; transition: all .15s; }
+.tag-pick-btn:hover { border-color: var(--text); color: var(--text); }
+.tag-pick-btn.selected { background: var(--text); color: #FAF7F2; border-color: var(--text); }
+.tag-custom-display { display: flex; flex-wrap: wrap; gap: 4px; margin: .4rem 0 0; }
+.tag-custom-display .tag-chip button { background: none; border: none; cursor: pointer; color: inherit; font-size: .75rem; padding: 0 0 0 2px; line-height: 1; opacity: .7; }
+.tag-custom-display .tag-chip button:hover { opacity: 1; }
+.tag-picker-input { display: flex; gap: .4rem; margin-top: .5rem; }
+.tag-picker-input input { flex: 1; padding: .4rem .7rem; border: 1px solid var(--border-mid); border-radius: var(--radius-sm); font-size: .78rem; font-family: inherit; background: var(--surface); color: var(--text); outline: none; }
+.tag-picker-input input:focus { border-color: var(--accent); }
+.tag-picker-input button { padding: .4rem .8rem; border: 1px solid var(--border-mid); border-radius: var(--radius-sm); font-size: .73rem; font-family: inherit; background: var(--surface); color: var(--text-mid); cursor: pointer; white-space: nowrap; }
+
+/* ── Loading / empty ── */
 .empty { padding: 1.5rem; text-align: center; color: var(--text-light); font-size: .82rem; }
+.loading { padding: 3rem; text-align: center; color: var(--text-light); font-size: .85rem; }
 
 /* ── Toast ── */
 .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--text); color: #FAF7F2; padding: .6rem 1.1rem; border-radius: var(--radius-sm); font-size: .78rem; opacity: 0; transform: translateY(8px); transition: all .25s; pointer-events: none; z-index: 300; }
@@ -181,12 +199,8 @@ tr.item-row:hover td { background: var(--bg); }
     <p>Wardrobe tracker &amp; gap analysis &mdash; Spring 2026</p>
   </div>
   <div class="header-right">
-    <span id="gh-status" style="font-size:.72rem;color:rgba(250,247,242,.45);"></span>
-    <button class="hbtn" id="pull-btn" onclick="pullFromGitHub()">⬇ Pull from GitHub</button>
-    <button class="hbtn" id="push-btn" onclick="pushToGitHub()">⬆ Push to GitHub</button>
-    <button class="hbtn" onclick="openGHSettings()">⚙ GitHub</button>
     <button class="hbtn" onclick="exportCSV()">Export CSV</button>
-    <button class="hbtn accent" onclick="openAdd('casual')">+ Add item</button>
+    <button class="hbtn accent" onclick="openAdd()">+ Add item</button>
   </div>
 </div>
 
@@ -195,22 +209,28 @@ tr.item-row:hover td { background: var(--bg); }
   <div class="metric"><div class="metric-label">Avg palette score</div><div class="metric-value" id="m-avg">—</div><div class="metric-sub">out of 10</div></div>
   <div class="metric"><div class="metric-label">DA ideal</div><div class="metric-value" id="m-ideal">—</div><div class="metric-sub">items scoring 8–10</div></div>
   <div class="metric"><div class="metric-label">Flagged</div><div class="metric-value" id="m-flag">—</div><div class="metric-sub">items scoring 1–4</div></div>
-  <div class="metric"><div class="metric-label">Crossover</div><div class="metric-value" id="m-cross">—</div><div class="metric-sub">active → lifestyle</div></div>
+  <div class="metric"><div class="metric-label">Multi-context</div><div class="metric-value" id="m-cross">—</div><div class="metric-sub">items with 2+ contexts</div></div>
 </div>
 
 <div class="toolbar">
   <div class="search-wrap">
     <span class="search-icon">⌕</span>
-    <input type="text" id="search" placeholder="Search items, brands, colors…" oninput="render()">
+    <input type="text" id="search" placeholder="Search items, brands, colors, tags…" oninput="render()">
   </div>
-  <button class="filter-btn active" data-cat="all" onclick="setFilter(this,'all')">All</button>
-  <button class="filter-btn" data-cat="work" onclick="setFilter(this,'work')">Work</button>
-  <button class="filter-btn" data-cat="casual" onclick="setFilter(this,'casual')">Casual</button>
-  <button class="filter-btn" data-cat="active" onclick="setFilter(this,'active')">Active</button>
-  <button class="filter-btn" data-score="flag" onclick="setScoreFilter(this,'flag')">Flagged only</button>
-  <button class="filter-btn" data-score="ideal" onclick="setScoreFilter(this,'ideal')">DA ideal only</button>
+  <span class="toolbar-sep"></span>
+  <button class="filter-tag" data-tag="work" onclick="toggleTagFilter('work')">Work</button>
+  <button class="filter-tag" data-tag="casual" onclick="toggleTagFilter('casual')">Casual</button>
+  <button class="filter-tag" data-tag="active" onclick="toggleTagFilter('active')">Active</button>
+  <button class="filter-tag" data-tag="lounge" onclick="toggleTagFilter('lounge')">Lounge</button>
+  <button class="filter-tag" data-tag="top" onclick="toggleTagFilter('top')">Top</button>
+  <button class="filter-tag" data-tag="bottom" onclick="toggleTagFilter('bottom')">Bottom</button>
+  <button class="filter-tag" data-tag="outerwear" onclick="toggleTagFilter('outerwear')">Outerwear</button>
+  <button class="filter-tag" data-tag="shoes" onclick="toggleTagFilter('shoes')">Shoes</button>
+  <span class="toolbar-sep"></span>
+  <button class="filter-btn" data-score="flag" onclick="setScoreFilter(this,'flag')">Flagged</button>
+  <button class="filter-btn" data-score="ideal" onclick="setScoreFilter(this,'ideal')">DA ideal</button>
   <select class="sort-select" id="sort-by" onchange="render()">
-    <option value="default">Sort: default</option>
+    <option value="default">Sort: brand</option>
     <option value="score-desc">Score: high to low</option>
     <option value="score-asc">Score: low to high</option>
     <option value="name">Name A–Z</option>
@@ -219,23 +239,17 @@ tr.item-row:hover td { background: var(--bg); }
 </div>
 
 <div class="main">
-  <div id="sections-container"></div>
+  <div id="sections-container"><div class="section"><div class="loading">Loading wardrobe…</div></div></div>
 
   <div class="section" id="gap-section">
-    <div class="sec-header" onclick="togSec('gaps')">
+    <div class="sec-header" onclick="togGaps()">
       <span class="sec-title">Gap analysis</span>
       <span class="sec-right">
-        <span class="sec-count">3 priority gaps</span>
+        <span class="sec-count" id="gap-count">—</span>
         <span class="chevron open" id="cv-gaps">&#9654;</span>
       </span>
     </div>
-    <div id="p-gaps">
-      <div class="gap-list">
-        <div class="gap-item"><span class="gpri gph">High</span>DA work outerwear — no blazer or structured jacket for the office. A camel, olive, or tobacco-brown blazer is the highest-leverage missing piece; it converts dark denim + any DA top into a polished Apple-office look.</div>
-        <div class="gap-item"><span class="gpri gph">High</span>Non-denim work bottom — all 3 work bottoms are dark denim. A camel trouser, olive chino, or dark brown wide-leg pant unlocks a new tier of workwear looks, especially paired with the rust Straightforward button-down.</div>
-        <div class="gap-item"><span class="gpri gpl">Low</span>Warm-toned lifestyle sneaker — the camel sandal partially solves footwear. A tan, gum-sole, or warm white sneaker extends year-round utility when sandals aren't practical.</div>
-      </div>
-    </div>
+    <div id="p-gaps"></div>
   </div>
 
   <div class="legend">
@@ -251,34 +265,24 @@ tr.item-row:hover td { background: var(--bg); }
   </div>
 </div>
 
-<!-- Modal -->
+<!-- Add/Edit modal -->
 <div class="modal-bg" id="modal-bg">
   <div class="modal">
     <h3 id="modal-title">Add item</h3>
     <div class="form-grid">
       <div class="form-row form-full"><label>Item name</label><input id="f-name" type="text" placeholder="e.g. HR Pleated Tennis Skirt"></div>
       <div class="form-row"><label>Brand / group</label><input id="f-brand" type="text" placeholder="e.g. Lululemon"></div>
-      <div class="form-row"><label>Category</label>
-        <select id="f-cat">
-          <option value="work">Work</option>
-          <option value="casual">Casual</option>
-          <option value="active">Active</option>
-        </select>
-      </div>
       <div class="form-row form-full"><label>Color name &amp; swatch</label>
         <div class="color-row">
           <input id="f-color" type="text" placeholder="e.g. Burgundy Bay">
           <input id="f-hex" type="color" value="#888888">
         </div>
       </div>
-      <div class="form-row"><label>Palette score (1–10)</label><input id="f-score" type="number" min="1" max="10" placeholder="7"></div>
-      <div class="form-row"><label>Crossover potential</label>
-        <select id="f-cross">
-          <option value="Yes">Yes</option>
-          <option value="Partial">Partial</option>
-          <option value="No">No</option>
-        </select>
+      <div class="form-row form-full">
+        <label>Tags</label>
+        <div class="tag-picker" id="f-tag-picker"></div>
       </div>
+      <div class="form-row"><label>Palette score (1–10)</label><input id="f-score" type="number" min="1" max="10" placeholder="7"></div>
       <div class="form-row"><label>Status</label>
         <select id="f-status">
           <option value="">—</option>
@@ -297,124 +301,32 @@ tr.item-row:hover td { background: var(--bg); }
 
 <div class="toast" id="toast"></div>
 
-<!-- GitHub settings modal -->
-<div class="modal-bg" id="gh-modal-bg">
-  <div class="modal">
-    <h3>GitHub sync settings</h3>
-    <p style="font-size:.8rem;color:var(--text-mid);margin-bottom:1.1rem;line-height:1.5;">Your credentials are stored only in this browser's localStorage — never sent anywhere except GitHub's API.</p>
-    <div class="form-grid">
-      <div class="form-row"><label>GitHub username</label><input id="gh-user" type="text" placeholder="nmillere"></div>
-      <div class="form-row"><label>Repository name</label><input id="gh-repo" type="text" placeholder="wardrobe"></div>
-      <div class="form-row form-full"><label>Personal access token</label><input id="gh-token" type="password" placeholder="github_pat_…"></div>
-      <div class="form-row form-full"><label>CSV filename in repo</label><input id="gh-file" type="text" placeholder="wardrobe.csv"></div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeGHSettings()">Cancel</button>
-      <button class="btn-save" onclick="saveGHSettings()">Save settings</button>
-    </div>
-  </div>
-</div>
-
-<!-- Load from CSV modal (fallback) -->
-<div class="modal-bg" id="load-modal-bg">
-  <div class="modal">
-    <h3>Load from CSV</h3>
-    <p style="font-size:.82rem;color:var(--text-mid);margin-bottom:1rem;line-height:1.5;">Paste a CSV below to replace all current items. Use Pull from GitHub for automatic sync.</p>
-    <div class="form-row" style="margin-bottom:.5rem;">
-      <label>Paste CSV content</label>
-      <textarea id="csv-paste" style="height:160px;font-size:.72rem;font-family:monospace;resize:vertical;" placeholder="Paste CSV here…"></textarea>
-    </div>
-    <p id="csv-parse-msg" style="font-size:.75rem;min-height:1.2rem;margin-bottom:.5rem;color:#A32D2D;"></p>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeLoadModal()">Cancel</button>
-      <button class="btn-save" onclick="loadFromCSV()">Load &amp; replace</button>
-    </div>
-  </div>
-</div>
-
 <script>
-const CATS = [
-  { id: 'work', label: 'Workwear', pill: 'pill-work', pillText: 'Work' },
-  { id: 'casual', label: 'Casual / Off-duty', pill: 'pill-casual', pillText: 'Casual' },
-  { id: 'active', label: 'Activewear', pill: 'pill-active', pillText: 'Active' }
+const PREDEFINED_TAGS = [
+  { id: 'work',      label: 'Work',      group: 'context' },
+  { id: 'casual',    label: 'Casual',    group: 'context' },
+  { id: 'active',    label: 'Active',    group: 'context' },
+  { id: 'lounge',    label: 'Lounge',    group: 'context' },
+  { id: 'top',       label: 'Top',       group: 'type' },
+  { id: 'bottom',    label: 'Bottom',    group: 'type' },
+  { id: 'dress',     label: 'Dress',     group: 'type' },
+  { id: 'outerwear', label: 'Outerwear', group: 'type' },
+  { id: 'shoes',     label: 'Shoes',     group: 'type' },
+  { id: 'accessory', label: 'Accessory', group: 'type' },
 ];
+const CONTEXT_TAGS = new Set(['work','casual','active','lounge']);
+const TYPE_TAGS    = new Set(['top','bottom','dress','outerwear','shoes','accessory']);
 
-const DEFAULT_ITEMS = [
-  {id:1,cat:'work',brand:'A&F',name:'Curve Love HR 90s Relaxed Jean, medium let-down hem',color:'Dark indigo',hex:'#3D5C8C',score:6,cross:'Partial',notes:'Anchor with warm DA tops. Curve Love fit for higher hip-to-waist ratio.',status:''},
-  {id:2,cat:'work',brand:'A&F',name:'HR Wide Leg Jean, dark',color:'Dark indigo',hex:'#2A3D5C',score:6,cross:'Yes',notes:'Best work denim. Clean hem + wide leg reads polished. Belted waist is a DA styling asset.',status:''},
-  {id:3,cat:'work',brand:'AllSaints',name:'Frankie Double Zip Jeans',color:'Washed Black',hex:'#2C2C2C',score:8,cross:'Yes',notes:'Best DA-aligned work bottom you own. Washed black has warm undertones.',status:''},
-  {id:4,cat:'casual',brand:'A&F Sunday',name:'Mockneck Crew',color:'Sky Blue',hex:'#87CEEB',score:2,cross:'No',notes:'Cool pastel — home/lounge only. Clashes with DA warm coloring.',status:''},
-  {id:5,cat:'casual',brand:'A&F Sunday',name:'Mockneck Crew',color:'Dark Green',hex:'#2D5016',score:8,cross:'Yes',notes:'Strong DA color. Works as smart casual top.',status:''},
-  {id:6,cat:'casual',brand:'A&F Sunday',name:'Mockneck Crew',color:'Light Heather Grey',hex:'#C8C8C0',score:5,cross:'No',notes:'Cool-leaning grey. Functional neutral but not DA-enhancing.',status:''},
-  {id:7,cat:'casual',brand:'A&F Sunday',name:'HR Baggy Sweatpants',color:'Sky Blue',hex:'#87CEEB',score:2,cross:'No',notes:'Home/lounge only. Off-palette for DA.',status:''},
-  {id:8,cat:'casual',brand:'A&F Sunday',name:'HR Wide Leg Sweatpant',color:'Warm sage green',hex:'#8FAF82',score:6,cross:'Partial',notes:'Yellow-green warmth makes this conditional. Pairs with camel or dark orange.',status:'updated'},
-  {id:9,cat:'casual',brand:'A&F Sunday',name:'Hoodie',color:'Warm sage green',hex:'#8FAF82',score:6,cross:'Partial',notes:'Same warm sage as wide leg sweatpant. Wearable with warm DA anchors.',status:'updated'},
-  {id:10,cat:'casual',brand:'A&F Sunday',name:'Hoodie',color:'Dark Grey',hex:'#555555',score:6,cross:'Partial',notes:'DA grey is warmer than cool grey. Pair with warm DA pieces to elevate.',status:''},
-  {id:11,cat:'casual',brand:'A&F Sunday',name:'HR Baggy Sweatpants',color:'Dark Grey',hex:'#555555',score:6,cross:'No',notes:'Casual/lounge use. Better than sky blue but still conditional.',status:''},
-  {id:12,cat:'casual',brand:'Uniqlo',name:'Denim Boxy Shirt, Half Sleeve',color:'Natural',hex:'#E8DCC8',score:8,cross:'Yes',notes:'Warm natural ivory. Excellent DA neutral and strong crossover top.',status:''},
-  {id:13,cat:'casual',brand:'Uniqlo',name:'Mini T-Shirt',color:'Dark Orange',hex:'#C84B11',score:9,cross:'Yes',notes:'Best DA top in your wardrobe. Anchor every neutral look with this.',status:''},
-  {id:14,cat:'casual',brand:'Uniqlo',name:'Mini T-Shirt',color:'Navy',hex:'#1A3A6B',score:3,cross:'No',notes:'Cool blue — off-palette for DA. Wear sparingly and only for sport.',status:''},
-  {id:15,cat:'casual',brand:'Uniqlo',name:'Mini T-Shirt',color:'Gray',hex:'#888880',score:5,cross:'No',notes:'Cool-leaning grey. Functional but not DA-enhancing.',status:''},
-  {id:16,cat:'casual',brand:'Uniqlo',name:'Mini T-Shirt',color:'Olive',hex:'#5B6B3A',score:9,cross:'Yes',notes:'Excellent DA color. Strong crossover top for work and casual.',status:''},
-  {id:17,cat:'casual',brand:'Uniqlo',name:'Cotton Gathered Mini Dress | Printed',color:'Light Blue',hex:'#A8C8E0',score:2,cross:'No',notes:'Cool pastel — clashes directly with DA warm coloring.',status:''},
-  {id:18,cat:'casual',brand:'Uniqlo',name:'mofusand UT Graphic T-Shirt | Cropped',color:'White',hex:'#F5F0E8',score:5,cross:'No',notes:'Novelty/fun piece. Wear for personality not palette.',status:''},
-  {id:19,cat:'casual',brand:'Uniqlo',name:'Cotton Short Shirt | Printed',color:'Off White',hex:'#F0EAD6',score:7,cross:'Yes',notes:'Warm ivory base. Good spring layering top.',status:''},
-  {id:20,cat:'casual',brand:'Uniqlo',name:'Cotton Cocoon Skirt | Printed',color:'Off White',hex:'#F0EAD6',score:7,cross:'Yes',notes:'Versatile cocoon silhouette. Warm ivory base works well.',status:''},
-  {id:21,cat:'casual',brand:'Uniqlo',name:'Drapey Denim Skort',color:'Blue',hex:'#5A7BAD',score:3,cross:'No',notes:'Medium blue denim. Off-palette for DA. Casual wear only.',status:''},
-  {id:22,cat:'casual',brand:'Uniqlo',name:'Mini Polo Shirt',color:'White',hex:'#F5F0E8',score:5,cross:'Partial',notes:'Crisp white is cool for DA. Best as a layering piece under DA outerwear.',status:''},
-  {id:23,cat:'casual',brand:'Uniqlo',name:'Round Mini Shoulder Bag',color:'Rusty Orange',hex:'#B84A1A',score:9,cross:'Yes',notes:'Exceptional DA accessory. Elevates every neutral outfit instantly.',status:''},
-  {id:24,cat:'casual',brand:'Uniqlo',name:'Jersey Relaxed Jacket',color:'Blue',hex:'#3A5A8A',score:3,cross:'No',notes:'Off-palette. Consider replacing in olive or camel colorway.',status:''},
-  {id:25,cat:'casual',brand:'Madewell',name:'Balloon Jeans, Greene Wash',color:'Light-medium blue',hex:'#7EA8C9',score:3,cross:'No',notes:'Lighter wash than expected. Casual only — not work-appropriate.',status:'updated'},
-  {id:26,cat:'casual',brand:'Madewell',name:'Momjean Short, Willis Wash',color:'Medium-light blue',hex:'#7EA8C9',score:3,cross:'No',notes:'Cool-toned wash. Summer casual only.',status:''},
-  {id:27,cat:'casual',brand:'Madewell',name:'The Perfect Jean Short, Balsam Wash',color:'Light-medium blue',hex:'#8BAFC8',score:3,cross:'No',notes:'Worn-in light blue. Summer casual only.',status:''},
-  {id:28,cat:'casual',brand:'Madewell',name:'HR Denim Shorts, Danny Wash',color:'Medium blue',hex:'#5A7BAD',score:4,cross:'No',notes:'Medium TENCEL blue. Slightly better than lighter washes but still cool-toned.',status:''},
-  {id:29,cat:'casual',brand:'Madewell',name:'Boardwalk Post Slide Sandal',color:'Desert Camel',hex:'#C4956A',score:9,cross:'Yes',notes:'First DA-ideal footwear. Warms every outfit including cool-toned denim.',status:''},
-  {id:30,cat:'casual',brand:'Madewell',name:'Boatneck Button-Back Sweater Tee',color:'Golden Straw stripe',hex:'#D4A520',score:9,cross:'Yes',notes:'Excellent DA color. Boatneck + boxy crop is highly crossover-ready.',status:''},
-  {id:31,cat:'casual',brand:'AllSaints',name:'Halis Oversized Amelie T-Shirt',color:'Sandy White',hex:'#F0EAD6',score:7,cross:'Yes',notes:'Sandy warm white — better than bright white for DA. Good layering top.',status:''},
-  {id:32,cat:'casual',brand:'AllSaints',name:'West Long Sleeve Top',color:'Black',hex:'#1a1a1a',score:7,cross:'Yes',notes:'Solid work and casual top. Anchors well with DA accessories.',status:''},
-  {id:33,cat:'casual',brand:'AllSaints',name:'Sabbath Boxy Embellished Graphic Tee',color:'Washed Black',hex:'#2C2C2C',score:7,cross:'Partial',notes:'Washed black reads warmer. Boxy fit works well casually.',status:''},
-  {id:34,cat:'casual',brand:'AllSaints',name:'Suki Leather Belt',color:'Black/Multi',hex:'#1a1a1a',score:6,cross:'Yes',notes:'Functional belt. Warm brass hardware detail would push this to 8/10.',status:''},
-  {id:35,cat:'active',brand:'Lululemon',name:'Align HR Short 6"',color:'Black',hex:'#1a1a1a',score:7,cross:'Partial',notes:'Solid neutral. Pairs well under DA linen tops.',status:''},
-  {id:36,cat:'active',brand:'Lululemon',name:'HR Pleated Tennis Skirt',color:'Black',hex:'#1a1a1a',score:7,cross:'Yes',notes:'Best crossover active piece. Smart casual with a DA knit.',status:''},
-  {id:37,cat:'active',brand:'Lululemon',name:'Lightweight HR Tennis Skirt',color:'Black',hex:'#1a1a1a',score:7,cross:'Yes',notes:'Crossover with tucked-in camel or rust top.',status:''},
-  {id:38,cat:'active',brand:'Lululemon',name:'Like a Cloud Ribbed Longline Bra',color:'Black',hex:'#1a1a1a',score:7,cross:'Yes',notes:'Wears as a top under an open blazer or jacket.',status:''},
-  {id:39,cat:'active',brand:'Lululemon',name:'Like a Cloud Longline Bra',color:'Black',hex:'#1a1a1a',score:7,cross:'Yes',notes:'Same crossover logic as ribbed version.',status:''},
-  {id:40,cat:'active',brand:'Lululemon',name:'Adapted State Textured Jacket',color:'Black',hex:'#1a1a1a',score:7,cross:'Yes',notes:'Reflective texture elevates it. Wears over DA outfits for active-to-casual transitions.',status:''},
-  {id:41,cat:'active',brand:'Lululemon',name:"It's Rulu Ribbed Cropped Half Zip",color:'Black',hex:'#1a1a1a',score:7,cross:'Partial',notes:'Cropped cut limits crossover. Good layering piece.',status:''},
-  {id:42,cat:'active',brand:'Lululemon',name:"It's Rulu Cropped Half Zip",color:'Black',hex:'#1a1a1a',score:7,cross:'Partial',notes:'Near-duplicate of ribbed version. Consider diversifying.',status:''},
-  {id:43,cat:'active',brand:'Lululemon',name:'UV-Protective Side Ruched Running Long Sleeve',color:'Burgundy Bay',hex:'#6B2737',score:9,cross:'Yes',notes:'Excellent DA color. Wears easily as a casual top.',status:'incoming'},
-  {id:44,cat:'active',brand:'Lululemon',name:'Wunder Train HR Tight 25"',color:'Burgundy Bay',hex:'#6B2737',score:9,cross:'Partial',notes:'Strong DA color. Crossover with an oversized camel knit.',status:'incoming'},
-  {id:45,cat:'active',brand:'Lululemon',name:'Wunder Train HR Short 6"',color:'Burgundy Bay',hex:'#6B2737',score:9,cross:'Partial',notes:'Best warm-season DA active piece in your wardrobe.',status:'incoming'},
-  {id:46,cat:'active',brand:'Nomadix',name:'Bandana Towel — Paisley Green',color:'Paisley Green',hex:'#4A7A4A',score:8,cross:'No',notes:'Warm olive-green. Great DA accessory for outdoor use.',status:''},
-  {id:47,cat:'active',brand:'Nomadix',name:'Bandana Towel — Paisley Red',color:'Paisley Red',hex:'#8B2020',score:8,cross:'No',notes:'Warm earthy red. Aligns well with DA palette.',status:''},
-  {id:48,cat:'active',brand:'Salomon',name:'Active Skin 4 Hydration Vest',color:'Black/Metal',hex:'#1a1a1a',score:7,cross:'No',notes:'Functional gear. Neutral black works with anything.',status:''},
-  {id:49,cat:'active',brand:'Salomon',name:'Active Skin 4 Hydration Vest',color:'Laurel Wreath/Lily Pad',hex:'#6B7A45',score:8,cross:'No',notes:'Muted olive-green. Excellent DA color — great investment.',status:''},
-  {id:50,cat:'active',brand:'Vuori',name:'Daily Speed Short 2.5"',color:'Black',hex:'#1a1a1a',score:7,cross:'No',notes:'Good active neutral.',status:''},
-  {id:51,cat:'active',brand:'Nike',name:'Swift Dri-FIT UV Long-Sleeve Crewneck',color:'Black',hex:'#1a1a1a',score:7,cross:'Partial',notes:'Crew neck limits crossover vs. a mock neck.',status:''},
-  {id:52,cat:'active',brand:'Janji',name:'Circa Daily Boxy T-Shirt',color:'Black',hex:'#1a1a1a',score:7,cross:'Yes',notes:'Boxy relaxed cut. Wears easily as a casual top with jeans.',status:''},
-  {id:53,cat:'active',brand:'Janji',name:'Circa Daily Boxy T-Shirt',color:'Warm cream + teal graphic',hex:'#F5EDD8',score:6,cross:'Partial',notes:'Cream base is DA-friendly. Teal graphic limits full DA styling. Pair with black bottoms.',status:''},
-  {id:54,cat:'active',brand:'Nike',name:'Swoosh Medium Support Bra',color:'Black/White',hex:'#1a1a1a',score:6,cross:'No',notes:'White details add cool contrast. Keep for sport only.',status:''},
-  {id:55,cat:'active',brand:'Asics',name:"Women's GT-2000 14",color:'Oatmeal/White',hex:'#D4C4A8',score:7,cross:'Partial',notes:'Warm oatmeal tone is DA-adjacent. Pairs with casual DA looks.',status:''},
-  {id:56,cat:'active',brand:'Nike',name:"Women's Swift Repel Packable Novelty Jacket",color:'Black/Anthracite',hex:'#1a1a1a',score:7,cross:'Partial',notes:'Packable utility. Works as an outer layer in casual contexts.',status:''},
-  {id:57,cat:'work',brand:'Straightforward',name:'Oversized button-down shirt',color:'Rust/terracotta',hex:'#8B3A2A',score:9,cross:'Yes',notes:'Excellent DA color. Fills biggest work top gap — wear with dark denim or wide leg trousers.',status:''},
-  {id:58,cat:'casual',brand:'Scotch & Soda',name:'Lace-up cropped pullover (Endless Horizons)',color:'Light heather grey',hex:'#C8C8C0',score:5,cross:'Partial',notes:'Conditional. Cool-leaning grey; pair with strong DA bottoms to ground the look.',status:''},
-  {id:59,cat:'casual',brand:'7115 by Szeki',name:'Linen henley pullover',color:'Dark navy',hex:'#1A2A4A',score:3,cross:'No',notes:'Off-palette. Cool blue clashes with DA warm coloring. Lounge or home only.',status:''},
-  {id:60,cat:'casual',brand:'Madewell',name:'Corduroy shacket',color:'Dusty mauve-brown',hex:'#8B6355',score:7,cross:'Partial',notes:'Warm dusty undertones. Good casual outerwear layer; pairs well with DA earth tones.',status:''},
-  {id:61,cat:'casual',brand:'Fear of God Essentials',name:'Chunky turtleneck sweater',color:'Medium heather grey',hex:'#888880',score:5,cross:'Partial',notes:'Conditional. Works with strong DA anchors like rust or camel. Avoid pairing with other cool tones.',status:''},
-  {id:62,cat:'casual',brand:'A&F',name:'Open-knit sleeveless sweater',color:'Cool sage/mint',hex:'#8FBFB0',score:4,cross:'No',notes:'Off-palette. Cool sage similar to ocean green Sunday pieces. Casual only.',status:''},
-  {id:63,cat:'casual',brand:'Madewell',name:'Oversized linen shirt',color:'Bright white',hex:'#F5F5F0',score:5,cross:'Partial',notes:'Bright white is cool for DA. Works best open as a layering piece over DA tops.',status:''},
-  {id:64,cat:'casual',brand:'Superdry',name:'Geometric print crop top',color:'Black/white print',hex:'#1a1a1a',score:6,cross:'Partial',notes:'Black base is ok; white geometric print adds cool contrast. Pair with warm DA bottoms.',status:''},
-];
-
-let items = JSON.parse(localStorage.getItem('da-wardrobe') || 'null') || DEFAULT_ITEMS;
-let nextId = Math.max(...items.map(i => i.id)) + 1;
+let items = [];
 let editingId = null;
-let activeCat = 'all';
+let activeTags = new Set();
 let activeScore = 'all';
-const openSections = { work: true, casual: false, active: false, gaps: true };
+let gapOpen = true;
+let formTags = new Set();
 
-function save() { localStorage.setItem('da-wardrobe', JSON.stringify(items)); }
-function sc(s) { return s >= 8 ? '#3B6D11' : s >= 5 ? '#BA7517' : '#A32D2D'; }
+// ── Utilities ────────────────────────────────────────────────────────────────
+
+function sc(s)  { return s >= 8 ? '#3B6D11' : s >= 5 ? '#BA7517' : '#A32D2D'; }
 function rowCls(item) {
   if (item.score <= 4) return 'row-flag';
   if (item.score >= 8) return 'row-star';
@@ -422,146 +334,130 @@ function rowCls(item) {
   if (item.status === 'incoming') return 'row-incoming';
   return '';
 }
-function xHtml(c) {
-  if (c === 'Yes') return '<span class="cx-yes">Yes</span>';
-  if (c === 'Partial') return '<span class="cx-partial">Partial</span>';
-  return '<span class="cx-no">No</span>';
-}
 function sBadge(s) {
   if (s === 'incoming') return '<span class="badge badge-incoming">incoming</span>';
-  if (s === 'updated') return '<span class="badge badge-updated">updated</span>';
+  if (s === 'updated')  return '<span class="badge badge-updated">updated</span>';
   return '';
 }
+function tagCls(t) {
+  if (CONTEXT_TAGS.has(t)) return 'tag-context';
+  if (TYPE_TAGS.has(t))    return 'tag-type';
+  return 'tag-custom';
+}
+function tagChipsHtml(tagsStr) {
+  return (tagsStr || '').split('|').filter(Boolean)
+    .map(t => `<span class="tag-chip ${tagCls(t)}">${h(t)}</span>`)
+    .join('');
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+function h(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ── API calls ─────────────────────────────────────────────────────────────────
+
+async function loadItems() {
+  try {
+    const res = await fetch('/api/wardrobe');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    items = await res.json();
+    render();
+  } catch(e) {
+    document.getElementById('sections-container').innerHTML =
+      `<div class="section"><div class="empty">Failed to load wardrobe: ${e.message}</div></div>`;
+  }
+}
+
+async function saveItem() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { alert('Please enter an item name.'); return; }
+  if (!formTags.size) { alert('Please select at least one tag.'); return; }
+  const payload = {
+    name,
+    brand:  document.getElementById('f-brand').value.trim() || '—',
+    color:  document.getElementById('f-color').value.trim() || '—',
+    hex:    document.getElementById('f-hex').value,
+    score:  Math.min(10, Math.max(1, parseInt(document.getElementById('f-score').value) || 5)),
+    tags:   [...formTags].join('|'),
+    status: document.getElementById('f-status').value,
+    notes:  document.getElementById('f-notes').value.trim(),
+  };
+  try {
+    if (editingId) {
+      const res = await fetch('/api/wardrobe', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: editingId, ...payload }),
+      });
+      if (!res.ok) { const e = await res.text().then(t => { try { return JSON.parse(t).error || t; } catch { return t; } }); throw new Error(e); }
+      const updated = await res.json();
+      const idx = items.findIndex(i => i.id === editingId);
+      if (idx > -1) items[idx] = updated;
+      toast('Item updated');
+    } else {
+      const res = await fetch('/api/wardrobe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) { const e = await res.text().then(t => { try { return JSON.parse(t).error || t; } catch { return t; } }); throw new Error(e); }
+      const created = await res.json();
+      items.push(created);
+      toast('Item added');
+    }
+    closeModal();
+    render();
+  } catch(e) {
+    toast('Save failed: ' + e.message);
+  }
+}
+
+async function deleteItem(id) {
+  if (!confirm('Remove this item from your wardrobe?')) return;
+  try {
+    const res = await fetch(`/api/wardrobe?id=${id}`, { method: 'DELETE' });
+    if (!res.ok) { const e = await res.text().then(t => { try { return JSON.parse(t).error || t; } catch { return t; } }); throw new Error(e); }
+    items = items.filter(i => i.id !== id);
+    render();
+    toast('Item removed');
+  } catch(e) {
+    toast('Delete failed: ' + e.message);
+  }
+}
+
+// ── Filtering / sorting ───────────────────────────────────────────────────────
 
 function getFiltered() {
-  const q = document.getElementById('search').value.toLowerCase();
+  const q    = document.getElementById('search').value.toLowerCase();
   const sort = document.getElementById('sort-by').value;
   let data = items.filter(i => {
-    if (activeCat !== 'all' && i.cat !== activeCat) return false;
-    if (activeScore === 'flag' && i.score > 4) return false;
+    const tagArr = (i.tags || '').split('|');
+    if (activeTags.size > 0 && ![...activeTags].every(t => tagArr.includes(t))) return false;
+    if (activeScore === 'flag'  && i.score > 4) return false;
     if (activeScore === 'ideal' && i.score < 8) return false;
-    if (q && !`${i.name} ${i.brand} ${i.color} ${i.notes}`.toLowerCase().includes(q)) return false;
+    if (q && !`${i.name} ${i.brand} ${i.color} ${i.notes} ${i.tags}`.toLowerCase().includes(q)) return false;
     return true;
   });
-  if (sort === 'score-desc') data.sort((a,b) => b.score - a.score);
-  else if (sort === 'score-asc') data.sort((a,b) => a.score - b.score);
-  else if (sort === 'name') data.sort((a,b) => a.name.localeCompare(b.name));
-  else if (sort === 'brand') data.sort((a,b) => a.brand.localeCompare(b.brand));
+  if      (sort === 'score-desc') data.sort((a,b) => b.score - a.score);
+  else if (sort === 'score-asc')  data.sort((a,b) => a.score - b.score);
+  else if (sort === 'name')       data.sort((a,b) => a.name.localeCompare(b.name));
+  else                            data.sort((a,b) => a.brand.localeCompare(b.brand));
   return data;
 }
 
-function updateMetrics() {
-  const n = items.length;
-  const avg = n ? (items.reduce((s,i) => s+i.score, 0)/n).toFixed(1) : '—';
-  const ideal = items.filter(i => i.score >= 8).length;
-  const flag = items.filter(i => i.score <= 4).length;
-  const cross = items.filter(i => i.cat === 'active' && (i.cross === 'Yes' || i.cross === 'Partial')).length;
-  document.getElementById('m-total').textContent = n;
-  document.getElementById('m-avg').textContent = avg;
-  document.getElementById('m-ideal').textContent = ideal;
-  document.getElementById('m-flag').textContent = flag;
-  document.getElementById('m-cross').textContent = cross;
-}
-
-function render() {
-  const filtered = getFiltered();
-  const con = document.getElementById('sections-container');
-  con.innerHTML = '';
-  const showingAll = activeCat === 'all' && activeScore === 'all';
-
-  const catsToRender = activeCat === 'all' ? ['work','casual','active'] : [activeCat];
-
-  catsToRender.forEach(catId => {
-    const catInfo = CATS.find(c => c.id === catId);
-    const catItems = filtered.filter(i => i.cat === catId);
-    const allCatItems = items.filter(i => i.cat === catId).length;
-    const brands = [...new Set(catItems.map(i => i.brand))];
-    const isOpen = openSections[catId];
-
-    let rows = '';
-    const sortVal = document.getElementById('sort-by').value;
-    if (sortVal === 'default') {
-      brands.forEach(brand => {
-        const bi = catItems.filter(i => i.brand === brand);
-        rows += `<tr class="grp-row"><td colspan="7">${brand}</td></tr>`;
-        bi.forEach(item => {
-          rows += `<tr class="item-row ${rowCls(item)}">
-            <td>${item.name} ${sBadge(item.status)}</td>
-            <td style="color:var(--text-mid)">${item.brand}</td>
-            <td><div class="swatch-cell"><span class="swatch" style="background:${item.hex}"></span><span>${item.color}</span></div></td>
-            <td><div class="score-bar"><div class="bar-track"><div class="bar-fill" style="width:${item.score*10}%;background:${sc(item.score)}"></div></div><span class="score-num" style="color:${sc(item.score)}">${item.score}/10</span></div></td>
-            <td>${xHtml(item.cross)}</td>
-            <td style="color:var(--text-mid);font-size:.73rem">${item.notes}</td>
-            <td><div class="act-wrap"><button class="act-btn" onclick="openEdit(${item.id})">Edit</button><button class="act-btn del" onclick="deleteItem(${item.id})">✕</button></div></td>
-          </tr>`;
-        });
-      });
-    } else {
-      catItems.forEach(item => {
-        rows += `<tr class="item-row ${rowCls(item)}">
-          <td>${item.name} ${sBadge(item.status)}</td>
-          <td style="color:var(--text-mid)">${item.brand}</td>
-          <td><div class="swatch-cell"><span class="swatch" style="background:${item.hex}"></span><span>${item.color}</span></div></td>
-          <td><div class="score-bar"><div class="bar-track"><div class="bar-fill" style="width:${item.score*10}%;background:${sc(item.score)}"></div></div><span class="score-num" style="color:${sc(item.score)}">${item.score}/10</span></div></td>
-          <td>${xHtml(item.cross)}</td>
-          <td style="color:var(--text-mid);font-size:.73rem">${item.notes}</td>
-          <td><div class="act-wrap"><button class="act-btn" onclick="openEdit(${item.id})">Edit</button><button class="act-btn del" onclick="deleteItem(${item.id})">✕</button></div></td>
-        </tr>`;
-      });
-    }
-
-    if (!rows) rows = `<tr><td colspan="7" class="empty">No items match current filters.</td></tr>`;
-
-    const sec = document.createElement('div');
-    sec.className = 'section';
-    const countText = catItems.length === allCatItems ? `${allCatItems} items` : `${catItems.length} of ${allCatItems} items`;
-    sec.innerHTML = `
-      <div class="sec-header" onclick="togSec('${catId}')">
-        <span class="sec-title">
-          <span class="cat-pill ${catInfo.pill}">${catInfo.pillText}</span>
-          ${catInfo.label}
-        </span>
-        <span class="sec-right">
-          <span class="sec-count">${countText}</span>
-          <span class="chevron ${isOpen?'open':''}" id="cv-${catId}">&#9654;</span>
-        </span>
-      </div>
-      <div id="p-${catId}" style="display:${isOpen?'block':'none'}">
-        <div class="tbl-wrap">
-          <table>
-            <thead><tr>
-              <th class="col-name">Item</th>
-              <th class="col-brand">Brand</th>
-              <th class="col-color">Color</th>
-              <th class="col-score">Palette fit</th>
-              <th class="col-cross">Crossover</th>
-              <th class="col-notes">Notes</th>
-              <th class="col-act"></th>
-            </tr></thead>
-            <tbody>${rows}</tbody>
-          </table>
-        </div>
-        <div class="add-row"><button onclick="openAdd('${catId}')">+ add ${catInfo.label.toLowerCase()} item</button></div>
-      </div>`;
-    con.appendChild(sec);
-  });
-
-  updateMetrics();
-}
-
-function togSec(id) {
-  openSections[id] = !openSections[id];
-  const panel = document.getElementById('p-' + id);
-  const chev = document.getElementById('cv-' + id);
-  if (!panel || !chev) return;
-  panel.style.display = openSections[id] ? 'block' : 'none';
-  chev.classList.toggle('open', openSections[id]);
-}
-
-function setFilter(el, cat) {
-  activeCat = cat;
-  document.querySelectorAll('.filter-btn[data-cat]').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
+function toggleTagFilter(tag) {
+  if (activeTags.has(tag)) activeTags.delete(tag);
+  else activeTags.add(tag);
+  document.querySelectorAll('.filter-tag').forEach(btn =>
+    btn.classList.toggle('active', activeTags.has(btn.dataset.tag))
+  );
   render();
 }
 
@@ -572,20 +468,177 @@ function setScoreFilter(el, val) {
   render();
 }
 
+// ── Render ────────────────────────────────────────────────────────────────────
+
+function itemRow(item) {
+  return `<tr class="item-row ${rowCls(item)}">
+    <td>
+      <div>${h(item.name)} ${sBadge(item.status)}</div>
+      <div class="item-tags">${tagChipsHtml(item.tags)}</div>
+    </td>
+    <td style="color:var(--text-mid)">${h(item.brand)}</td>
+    <td><div class="swatch-cell"><span class="swatch" style="background:${h(item.hex)}"></span><span>${h(item.color)}</span></div></td>
+    <td><div class="score-bar"><div class="bar-track"><div class="bar-fill" style="width:${item.score*10}%;background:${sc(item.score)}"></div></div><span class="score-num" style="color:${sc(item.score)}">${item.score}/10</span></div></td>
+    <td style="color:var(--text-mid);font-size:.73rem">${h(item.notes)}</td>
+    <td><div class="act-wrap"><button class="act-btn" onclick="openEdit(${item.id})">Edit</button><button class="act-btn del" onclick="deleteItem(${item.id})">✕</button></div></td>
+  </tr>`;
+}
+
+function render() {
+  const filtered = getFiltered();
+  const sort = document.getElementById('sort-by').value;
+  let rows = '';
+
+  if (sort === 'default') {
+    const brands = [...new Set(filtered.map(i => i.brand))].sort((a,b) => a.localeCompare(b));
+    brands.forEach(brand => {
+      rows += `<tr class="grp-row"><td colspan="6">${brand}</td></tr>`;
+      filtered.filter(i => i.brand === brand).forEach(item => { rows += itemRow(item); });
+    });
+  } else {
+    filtered.forEach(item => { rows += itemRow(item); });
+  }
+
+  if (!rows) rows = `<tr><td colspan="6" class="empty">No items match current filters.</td></tr>`;
+
+  document.getElementById('sections-container').innerHTML = `
+    <div class="section">
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr>
+            <th class="col-name">Item</th>
+            <th class="col-brand">Brand</th>
+            <th class="col-color">Color</th>
+            <th class="col-score">Palette fit</th>
+            <th class="col-notes">Notes</th>
+            <th class="col-act"></th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+      <div class="add-row"><button onclick="openAdd()">+ add item</button></div>
+    </div>`;
+
+  renderGaps();
+  updateMetrics();
+}
+
+// ── Metrics ───────────────────────────────────────────────────────────────────
+
+function updateMetrics() {
+  const n    = items.length;
+  const avg  = n ? (items.reduce((s,i) => s + i.score, 0) / n).toFixed(1) : '—';
+  const ideal = items.filter(i => i.score >= 8).length;
+  const flag  = items.filter(i => i.score <= 4).length;
+  const multi = items.filter(i => {
+    const tags = (i.tags || '').split('|');
+    return tags.filter(t => CONTEXT_TAGS.has(t)).length >= 2;
+  }).length;
+  document.getElementById('m-total').textContent = n;
+  document.getElementById('m-avg').textContent   = avg;
+  document.getElementById('m-ideal').textContent = ideal;
+  document.getElementById('m-flag').textContent  = flag;
+  document.getElementById('m-cross').textContent = multi;
+}
+
+// ── Gap analysis ──────────────────────────────────────────────────────────────
+
+function computeGaps() {
+  const contextTags = ['work','casual','active','lounge'];
+  const typeTags    = ['top','bottom','dress','outerwear','shoes','accessory'];
+  const gaps = [];
+  for (const ctx of contextTags) {
+    for (const type of typeTags) {
+      const pair = items.filter(i => {
+        const t = (i.tags || '').split('|');
+        return t.includes(ctx) && t.includes(type);
+      });
+      if (!pair.length) continue;
+      const ideal = pair.filter(i => i.score >= 8).length;
+      if (ideal === 0) gaps.push({ priority: 'high', text: `No DA-ideal ${ctx} ${type}` });
+      else if (ideal === 1) gaps.push({ priority: 'low', text: `Only 1 DA-ideal ${ctx} ${type}` });
+    }
+  }
+  return gaps;
+}
+
+function togGaps() {
+  gapOpen = !gapOpen;
+  document.getElementById('p-gaps').style.display = gapOpen ? 'block' : 'none';
+  document.getElementById('cv-gaps').classList.toggle('open', gapOpen);
+}
+
+function renderGaps() {
+  const gaps = computeGaps();
+  document.getElementById('gap-count').textContent = gaps.length ? `${gaps.length} gaps` : 'Looking good';
+  const el = document.getElementById('p-gaps');
+  if (!gaps.length) {
+    el.innerHTML = '<div class="gap-list"><div class="gap-item" style="justify-content:center;color:var(--score-high)">✓ No DA-ideal gaps detected</div></div>';
+    return;
+  }
+  el.innerHTML = '<div class="gap-list">' +
+    gaps.map(g =>
+      `<div class="gap-item"><span class="gpri ${g.priority === 'high' ? 'gph' : 'gpl'}">${g.priority === 'high' ? 'High' : 'Low'}</span>${g.text}</div>`
+    ).join('') +
+  '</div>';
+}
+
+// ── Modal / form ──────────────────────────────────────────────────────────────
+
+function renderFormTagPicker() {
+  const ctx = PREDEFINED_TAGS.filter(t => t.group === 'context');
+  const typ = PREDEFINED_TAGS.filter(t => t.group === 'type');
+  const chip = tag => {
+    const sel = formTags.has(tag.id) ? ' selected' : '';
+    return `<button type="button" class="tag-pick-btn${sel}" data-tag="${h(tag.id)}" onclick="toggleFormTag('${h(tag.id)}')">${h(tag.label)}</button>`;
+  };
+  const customTags = [...formTags].filter(t => !PREDEFINED_TAGS.find(p => p.id === t));
+  const customDisplay = customTags.length
+    ? `<div class="tag-custom-display">${customTags.map(t =>
+        `<span class="tag-chip tag-custom">${h(t)}<button type="button" onclick="removeCustomTag('${h(t)}')">×</button></span>`
+      ).join('')}</div>`
+    : '';
+  document.getElementById('f-tag-picker').innerHTML = `
+    <div class="tag-picker-group"><span class="tpl">Context</span>${ctx.map(chip).join('')}</div>
+    <div class="tag-picker-group"><span class="tpl">Type</span>${typ.map(chip).join('')}</div>
+    ${customDisplay}
+    <div class="tag-picker-input">
+      <input id="f-custom-tag" type="text" placeholder="custom tag…" onkeydown="if(event.key==='Enter'){event.preventDefault();addCustomTag();}">
+      <button type="button" onclick="addCustomTag()">+ Add</button>
+    </div>`;
+}
+
+function toggleFormTag(tagId) {
+  if (formTags.has(tagId)) formTags.delete(tagId);
+  else formTags.add(tagId);
+  renderFormTagPicker();
+}
+
+function addCustomTag() {
+  const input = document.getElementById('f-custom-tag');
+  const val = input.value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
+  if (val && !formTags.has(val)) { formTags.add(val); renderFormTagPicker(); }
+  input.value = '';
+}
+
+function removeCustomTag(tag) {
+  formTags.delete(tag);
+  renderFormTagPicker();
+}
+
 function clearForm() {
   ['f-name','f-brand','f-color','f-notes'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('f-hex').value = '#888888';
   document.getElementById('f-score').value = '';
-  document.getElementById('f-cross').value = 'Yes';
-  document.getElementById('f-cat').value = 'casual';
   document.getElementById('f-status').value = '';
 }
 
-function openAdd(cat) {
+function openAdd() {
   editingId = null;
+  formTags = new Set();
   clearForm();
-  document.getElementById('f-cat').value = cat;
   document.getElementById('modal-title').textContent = 'Add item';
+  renderFormTagPicker();
   document.getElementById('modal-bg').classList.add('open');
 }
 
@@ -593,16 +646,16 @@ function openEdit(id) {
   const item = items.find(i => i.id === id);
   if (!item) return;
   editingId = id;
+  formTags = new Set(item.tags.split('|').filter(Boolean));
   document.getElementById('modal-title').textContent = 'Edit item';
-  document.getElementById('f-name').value = item.name;
+  document.getElementById('f-name').value  = item.name;
   document.getElementById('f-brand').value = item.brand;
   document.getElementById('f-color').value = item.color;
-  document.getElementById('f-hex').value = item.hex;
+  document.getElementById('f-hex').value   = item.hex;
   document.getElementById('f-score').value = item.score;
-  document.getElementById('f-cross').value = item.cross;
-  document.getElementById('f-cat').value = item.cat;
   document.getElementById('f-status').value = item.status || '';
-  document.getElementById('f-notes').value = item.notes;
+  document.getElementById('f-notes').value  = item.notes;
+  renderFormTagPicker();
   document.getElementById('modal-bg').classList.add('open');
 }
 
@@ -611,54 +664,22 @@ function closeModal() {
   editingId = null;
 }
 
-function saveItem() {
-  const name = document.getElementById('f-name').value.trim();
-  if (!name) { alert('Please enter an item name.'); return; }
-  const data = {
-    name,
-    brand: document.getElementById('f-brand').value.trim() || '—',
-    color: document.getElementById('f-color').value.trim() || '—',
-    hex: document.getElementById('f-hex').value,
-    score: Math.min(10, Math.max(1, parseInt(document.getElementById('f-score').value) || 5)),
-    cross: document.getElementById('f-cross').value,
-    cat: document.getElementById('f-cat').value,
-    status: document.getElementById('f-status').value,
-    notes: document.getElementById('f-notes').value.trim(),
-  };
-  if (editingId) {
-    const idx = items.findIndex(i => i.id === editingId);
-    if (idx > -1) items[idx] = { ...items[idx], ...data };
-    toast('Item updated');
-  } else {
-    items.push({ id: nextId++, ...data });
-    toast('Item added');
-  }
-  save();
-  closeModal();
-  render();
-}
+document.getElementById('modal-bg').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
 
-function deleteItem(id) {
-  if (!confirm('Remove this item from your wardrobe?')) return;
-  items = items.filter(i => i.id !== id);
-  save();
-  render();
-  toast('Item removed');
-}
-
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 2200);
-}
+// ── Export CSV ────────────────────────────────────────────────────────────────
 
 function buildCSV() {
-  const cols = ['id','cat','brand','name','color','hex','score','cross','status','notes'];
-  const header = ['id','category','brand','name','color','hex','palette_score','crossover','status','notes'].join(',');
-  const rows = items.map(i => cols.map(c => `"${String(i[c]||'').replace(/"/g,'""')}"`).join(','));
+  const header = 'id,tags,brand,name,color,hex,palette_score,status,notes';
+  const rows = items.map(i =>
+    [i.id, i.tags, i.brand, i.name, i.color, i.hex, i.score, i.status, i.notes]
+      .map(v => `"${String(v||'').replace(/"/g,'""')}"`)
+      .join(',')
+  );
   return [header, ...rows].join('\n');
 }
+
 function exportCSV() {
   const a = document.createElement('a');
   a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(buildCSV());
@@ -667,154 +688,9 @@ function exportCSV() {
   toast('CSV exported');
 }
 
-function getGHConfig() { return JSON.parse(localStorage.getItem('gh-config') || '{}'); }
-function openGHSettings() {
-  const cfg = getGHConfig();
-  document.getElementById('gh-user').value = cfg.user || '';
-  document.getElementById('gh-repo').value = cfg.repo || '';
-  document.getElementById('gh-token').value = cfg.token || '';
-  document.getElementById('gh-file').value = cfg.file || 'wardrobe.csv';
-  document.getElementById('gh-modal-bg').classList.add('open');
-}
-function closeGHSettings() { document.getElementById('gh-modal-bg').classList.remove('open'); }
-function saveGHSettings() {
-  localStorage.setItem('gh-config', JSON.stringify({
-    user: document.getElementById('gh-user').value.trim(),
-    repo: document.getElementById('gh-repo').value.trim(),
-    token: document.getElementById('gh-token').value.trim(),
-    file: document.getElementById('gh-file').value.trim() || 'wardrobe.csv',
-  }));
-  closeGHSettings();
-  updateGHStatus();
-  toast('GitHub settings saved');
-}
-function updateGHStatus() {
-  const cfg = getGHConfig();
-  const el = document.getElementById('gh-status');
-  el.textContent = (cfg.user && cfg.repo) ? cfg.user + '/' + cfg.repo : 'GitHub not configured';
-}
+// ── Boot ──────────────────────────────────────────────────────────────────────
 
-async function pushToGitHub() {
-  const cfg = getGHConfig();
-  if (!cfg.user || !cfg.repo || !cfg.token) { openGHSettings(); return; }
-  const btn = document.getElementById('push-btn');
-  btn.textContent = 'Pushing…'; btn.disabled = true;
-  try {
-    const csv = buildCSV();
-    const path = cfg.file || 'wardrobe.csv';
-    const apiBase = `https://api.github.com/repos/${cfg.user}/${cfg.repo}/contents/${path}`;
-    const headers = { 'Authorization': `token ${cfg.token}`, 'Content-Type': 'application/json', 'Accept': 'application/vnd.github.v3+json' };
-    let sha = null;
-    const existing = await fetch(apiBase, { headers });
-    if (existing.ok) { sha = (await existing.json()).sha; }
-    const body = { message: `Update wardrobe — ${new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`, content: btoa(unescape(encodeURIComponent(csv))) };
-    if (sha) body.sha = sha;
-    const res = await fetch(apiBase, { method: 'PUT', headers, body: JSON.stringify(body) });
-    if (!res.ok) throw new Error((await res.json()).message || res.status);
-    toast('Pushed to GitHub ✓');
-  } catch(e) { toast('Push failed: ' + e.message); }
-  finally { btn.textContent = '⬆ Push to GitHub'; btn.disabled = false; }
-}
-
-function parseCSV(raw) {
-  const lines = raw.split('\n').filter(l => l.trim());
-  const header = lines[0].split(',').map(h => h.replace(/"/g,'').trim().toLowerCase());
-  const idx = k => header.findIndex(h => k.includes(h));
-  const nameI = idx(['name']), brandI = idx(['brand']), catI = idx(['cat','category']);
-  const colorI = idx(['color']), hexI = idx(['hex']), scoreI = idx(['score','palette_score']);
-  const crossI = idx(['cross','crossover']), statusI = idx(['status']), notesI = idx(['notes']);
-  if (nameI === -1 || catI === -1) throw new Error('Missing required columns (name, category)');
-  const cell = (row, i) => {
-    if (i === -1) return '';
-    const cells = []; let cur = '', inQ = false;
-    for (const ch of row + ',') {
-      if (ch === '"') inQ = !inQ;
-      else if (ch === ',' && !inQ) { cells.push(cur.trim()); cur = ''; }
-      else cur += ch;
-    }
-    return (cells[i] || '').replace(/^"|"$/g,'').trim();
-  };
-  return lines.slice(1).map((line, i) => ({
-    id: i + 1, cat: cell(line,catI)||'casual', brand: cell(line,brandI)||'—',
-    name: cell(line,nameI), color: cell(line,colorI)||'—', hex: cell(line,hexI)||'#888888',
-    score: Math.min(10,Math.max(1,parseInt(cell(line,scoreI))||5)),
-    cross: cell(line,crossI)||'No', status: cell(line,statusI)||'', notes: cell(line,notesI)||'',
-  })).filter(i => i.name);
-}
-
-async function pullFromGitHub() {
-  const cfg = getGHConfig();
-  if (!cfg.user || !cfg.repo || !cfg.token) { openGHSettings(); return; }
-  const btn = document.getElementById('pull-btn');
-  btn.textContent = 'Pulling…'; btn.disabled = true;
-  try {
-    const path = cfg.file || 'wardrobe.csv';
-    const apiBase = `https://api.github.com/repos/${cfg.user}/${cfg.repo}/contents/${path}`;
-    const headers = { 'Authorization': `token ${cfg.token}`, 'Accept': 'application/vnd.github.v3+json' };
-    const res = await fetch(apiBase, { headers });
-    if (!res.ok) throw new Error((await res.json()).message || res.status);
-    const d = await res.json();
-    const csv = decodeURIComponent(escape(atob(d.content.replace(/\n/g,''))));
-    const loaded = parseCSV(csv);
-    if (!loaded.length) throw new Error('No valid rows found');
-    if (!confirm(`Load ${loaded.length} items from GitHub? Replaces current ${items.length} items.`)) return;
-    items = loaded;
-    nextId = Math.max(...items.map(i => i.id), 0) + 1;
-    save(); render();
-    toast(`Pulled ${loaded.length} items from GitHub ✓`);
-  } catch(e) { toast('Pull failed: ' + e.message); }
-  finally { btn.textContent = '⬇ Pull from GitHub'; btn.disabled = false; }
-}
-
-function openLoadModal() {
-  document.getElementById('csv-paste').value = '';
-  document.getElementById('csv-parse-msg').textContent = '';
-  document.getElementById('load-modal-bg').classList.add('open');
-}
-function closeLoadModal() { document.getElementById('load-modal-bg').classList.remove('open'); }
-function loadFromCSV() {
-  const raw = document.getElementById('csv-paste').value.trim();
-  if (!raw) { document.getElementById('csv-parse-msg').textContent = '⚠ Nothing to load.'; return; }
-  try {
-    const loaded = parseCSV(raw);
-    if (!loaded.length) throw new Error('No valid rows found');
-    if (!confirm(`Load ${loaded.length} items? Replaces current ${items.length} items.`)) return;
-    items = loaded; nextId = Math.max(...items.map(i => i.id)) + 1;
-    save(); closeLoadModal(); render();
-    toast(`Loaded ${loaded.length} items`);
-  } catch(e) { document.getElementById('csv-parse-msg').textContent = '⚠ ' + e.message; }
-}
-
-document.getElementById('gh-modal-bg').addEventListener('click', function(e) { if (e.target===this) closeGHSettings(); });
-document.getElementById('load-modal-bg').addEventListener('click', function(e) { if (e.target===this) closeLoadModal(); });
-document.getElementById('modal-bg').addEventListener('click', function(e) { if (e.target===this) closeModal(); });
-
-(function seedGHConfig() {
-  // Enter your GitHub credentials via the ⚙ GitHub button in the header.
-  // Do NOT hardcode a token here — anyone viewing page source can read it.
-  if (!getGHConfig().user) {
-    localStorage.setItem('gh-config', JSON.stringify({
-      user: '', repo: 'wardrobe', token: '', file: 'wardrobe.csv'
-    }));
-  }
-})();
-
-async function autoLoad() {
-  try {
-    const res = await fetch('https://raw.githubusercontent.com/nmillere/wardrobe/main/wardrobe.csv?t=' + Date.now());
-    if (!res.ok) return;
-    const loaded = parseCSV(await res.text());
-    if (!loaded.length) return;
-    items = loaded;
-    nextId = Math.max(...items.map(i => i.id), 0) + 1;
-    save();
-    render();
-  } catch(e) { /* fall back to localStorage */ }
-}
-
-updateGHStatus();
-render();
-autoLoad();
+loadItems();
 </script>
 </body>
 </html>
