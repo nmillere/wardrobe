@@ -101,6 +101,109 @@ function createServer(): McpServer {
   );
 
   server.tool(
+    "batch_add_wardrobe_items",
+    "Add multiple clothing items to the wardrobe in a single operation. Palette score: 9-10=core DA colors (rust/burnt orange/dark olive/burgundy/camel), 8=good DA (muted olive/washed black/warm ivory), 7=conditional (black/sandy white/warm grey), 5-6=borderline, 3-4=off-palette, 1-2=avoid.",
+    {
+      items: z
+        .array(
+          z.object({
+            name: z.string().describe("Item name"),
+            brand: z.string().describe("Brand or retailer"),
+            tags: z
+              .array(z.string())
+              .describe(
+                "Context: work/casual/active/lounge. Type: top/bottom/dress/outerwear/shoes/accessory."
+              ),
+            color: z.string().describe("Human-readable color description e.g. 'Rust Brown'"),
+            hex: z
+              .string()
+              .default("#888888")
+              .describe(
+                "Hex color code e.g. #C4956A — always provide a specific value matching the color; do not leave as #888888"
+              ),
+            palette_score: z
+              .number()
+              .int()
+              .min(1)
+              .max(10)
+              .describe("Deep Autumn palette compatibility score 1-10"),
+            status: z
+              .enum(["", "incoming", "updated"])
+              .default("")
+              .describe("Leave empty if owned; 'incoming' if ordered but not arrived"),
+            notes: z.string().default("").describe("Styling tips, pairing advice, DA context"),
+          })
+        )
+        .describe("Array of items to add"),
+    },
+    async ({ items: newItems }) => {
+      const token = process.env.GITHUB_TOKEN;
+      if (!token) throw new Error("GITHUB_TOKEN env var not set");
+      const { items, sha } = await fetchCSV(token);
+      let nextId = items.length ? Math.max(...items.map((i) => i.id)) + 1 : 1;
+
+      const added: WardrobeItem[] = [];
+      const skipped: string[] = [];
+
+      for (const newItem of newItems) {
+        const missingFields = [
+          !newItem.name && "name",
+          !newItem.brand && "brand",
+          !newItem.tags?.length && "tags",
+          !newItem.palette_score && "palette_score",
+        ].filter(Boolean) as string[];
+
+        if (missingFields.length > 0) {
+          skipped.push(
+            `"${newItem.name || "(unnamed)"}" — missing required field: ${missingFields.join(", ")}`
+          );
+          continue;
+        }
+
+        const { color: cleanColor, hex: cleanHex } = splitColorHex(newItem.color, newItem.hex);
+        const item: WardrobeItem = {
+          id: nextId++,
+          tags: newItem.tags.join("|"),
+          brand: newItem.brand,
+          name: newItem.name,
+          color: cleanColor,
+          hex: cleanHex,
+          score: newItem.palette_score,
+          status: newItem.status,
+          notes: newItem.notes,
+        };
+        items.push(item);
+        added.push(item);
+      }
+
+      if (added.length > 0) {
+        await pushCSV(
+          token,
+          items,
+          sha,
+          `Add ${added.length} item${added.length === 1 ? "" : "s"} to wardrobe via MCP`
+        );
+      }
+
+      const lines: string[] = [];
+      if (added.length > 0) {
+        lines.push(`Added ${added.length} item${added.length === 1 ? "" : "s"}:`);
+        added.forEach((i) =>
+          lines.push(
+            `  [${i.id}] ${i.brand} ${i.name} | tags: ${i.tags} | ${i.color} | score: ${i.score}/10`
+          )
+        );
+      }
+      if (skipped.length > 0) {
+        lines.push(`Skipped ${skipped.length}:`);
+        skipped.forEach((s) => lines.push(`  ${s}`));
+      }
+
+      return { content: [{ type: "text", text: lines.join("\n") || "Nothing to add." }] };
+    }
+  );
+
+  server.tool(
     "search_wardrobe_items",
     "Search wardrobe items using any combination of free-text query and structured filters. All specified filters must match (AND logic).",
     {
