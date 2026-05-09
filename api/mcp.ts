@@ -139,6 +139,9 @@ function createServer(): McpServer {
     async ({ items: newItems }) => {
       const token = process.env.GITHUB_TOKEN;
       if (!token) throw new Error("GITHUB_TOKEN env var not set");
+      if (newItems.length === 0) {
+        return { content: [{ type: "text", text: "Nothing to add." }] };
+      }
       const { items, sha } = await fetchCSV(token);
       let nextId = items.length ? Math.max(...items.map((i) => i.id)) + 1 : 1;
 
@@ -146,10 +149,11 @@ function createServer(): McpServer {
       const skipped: string[] = [];
 
       for (const newItem of newItems) {
+        const tags = newItem.tags.map((t) => t.trim()).filter(Boolean);
         const missingFields = [
           !newItem.name && "name",
           !newItem.brand && "brand",
-          !newItem.tags?.length && "tags",
+          !tags.length && "tags",
           !newItem.palette_score && "palette_score",
         ].filter(Boolean) as string[];
 
@@ -163,7 +167,7 @@ function createServer(): McpServer {
         const { color: cleanColor, hex: cleanHex } = splitColorHex(newItem.color, newItem.hex);
         const item: WardrobeItem = {
           id: nextId++,
-          tags: newItem.tags.join("|"),
+          tags: tags.join("|"),
           brand: newItem.brand,
           name: newItem.name,
           color: cleanColor,
