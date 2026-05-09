@@ -89,6 +89,89 @@ function createServer(): McpServer {
     }
   );
 
+  server.tool(
+    "get_wardrobe_item",
+    "Get a single wardrobe item by its numeric ID.",
+    { id: z.number().int().describe("Item ID") },
+    async ({ id }) => {
+      const token = process.env.GITHUB_TOKEN;
+      if (!token) throw new Error("GITHUB_TOKEN env var not set");
+      const { items } = await fetchCSV(token);
+      const item = items.find((i) => i.id === id);
+      if (!item) throw new Error(`Item ${id} not found`);
+      return {
+        content: [
+          {
+            type: "text",
+            text: `[${item.id}] ${item.brand} ${item.name} | tags: ${item.tags} | ${item.color} (${item.hex}) | score: ${item.score}/10${item.status ? ` | ${item.status}` : ""}${item.notes ? `\n    ${item.notes}` : ""}`,
+          },
+        ],
+      };
+    }
+  );
+
+  server.tool(
+    "update_wardrobe_item",
+    "Update any fields of an existing wardrobe item by ID. Only supply fields you want to change; omit the rest. Palette score: 9-10=core DA, 8=good DA, 7=conditional, 5-6=borderline, 3-4=off-palette, 1-2=avoid.",
+    {
+      id: z.number().int().describe("ID of the item to update"),
+      name: z.string().optional().describe("Item name"),
+      brand: z.string().optional().describe("Brand or retailer"),
+      tags: z.array(z.string()).optional().describe("Context: work/casual/active/lounge. Type: top/bottom/dress/outerwear/shoes/accessory."),
+      color: z.string().optional().describe("Human-readable color description"),
+      hex: z.string().optional().describe("Hex color code e.g. #C4956A"),
+      palette_score: z.number().int().min(1).max(10).optional().describe("Deep Autumn palette compatibility score 1-10"),
+      status: z.enum(["", "incoming", "updated"]).optional().describe("Leave empty if owned; 'incoming' if ordered but not arrived; 'updated' if recently re-scored"),
+      notes: z.string().optional().describe("Styling tips, pairing advice, DA context"),
+    },
+    async ({ id, name, brand, tags, color, hex, palette_score, status, notes }) => {
+      const token = process.env.GITHUB_TOKEN;
+      if (!token) throw new Error("GITHUB_TOKEN env var not set");
+      const { items, sha } = await fetchCSV(token);
+      const idx = items.findIndex((i) => i.id === id);
+      if (idx === -1) throw new Error(`Item ${id} not found`);
+      const existing = items[idx]!;
+      const updated: WardrobeItem = {
+        ...existing,
+        ...(name !== undefined && { name }),
+        ...(brand !== undefined && { brand }),
+        ...(tags !== undefined && { tags: tags.join("|") }),
+        ...(color !== undefined && { color }),
+        ...(hex !== undefined && { hex }),
+        ...(palette_score !== undefined && { score: palette_score }),
+        ...(status !== undefined && { status }),
+        ...(notes !== undefined && { notes }),
+      };
+      items[idx] = updated;
+      await pushCSV(token, items, sha, `Update ${updated.name} in wardrobe via MCP`);
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Updated: [${updated.id}] ${updated.brand} ${updated.name} | tags: ${updated.tags} | ${updated.color} | score: ${updated.score}/10${updated.status ? ` | ${updated.status}` : ""}${updated.notes ? `\n    ${updated.notes}` : ""}`,
+          },
+        ],
+      };
+    }
+  );
+
+  server.tool(
+    "delete_wardrobe_item",
+    "Permanently remove a wardrobe item by ID.",
+    { id: z.number().int().describe("ID of the item to delete") },
+    async ({ id }) => {
+      const token = process.env.GITHUB_TOKEN;
+      if (!token) throw new Error("GITHUB_TOKEN env var not set");
+      const { items, sha } = await fetchCSV(token);
+      const item = items.find((i) => i.id === id);
+      if (!item) throw new Error(`Item ${id} not found`);
+      await pushCSV(token, items.filter((i) => i.id !== id), sha, `Remove ${item.name} from wardrobe via MCP`);
+      return {
+        content: [{ type: "text", text: `Deleted: [${id}] ${item.brand} ${item.name}` }],
+      };
+    }
+  );
+
   return server;
 }
 
