@@ -208,6 +208,118 @@ function createServer(): McpServer {
   );
 
   server.tool(
+    "batch_update_wardrobe_items",
+    "Update multiple wardrobe items in a single operation. Supply only the fields you want to change per item; omit the rest. Palette score: 9-10=core DA, 8=good DA, 7=conditional, 5-6=borderline, 3-4=off-palette, 1-2=avoid.",
+    {
+      updates: z
+        .array(
+          z.object({
+            id: z.number().int().describe("ID of the item to update"),
+            name: z.string().optional().describe("Item name"),
+            brand: z.string().optional().describe("Brand or retailer"),
+            tags: z
+              .array(z.string())
+              .optional()
+              .describe(
+                "Context: work/casual/active/lounge. Type: top/bottom/dress/outerwear/shoes/accessory."
+              ),
+            color: z
+              .string()
+              .optional()
+              .describe("Human-readable color description e.g. 'Rust Brown'"),
+            hex: z
+              .string()
+              .optional()
+              .describe(
+                "Hex color code e.g. #C4956A — always provide a specific value; do not use #888888"
+              ),
+            palette_score: z
+              .number()
+              .int()
+              .min(1)
+              .max(10)
+              .optional()
+              .describe("Deep Autumn palette compatibility score 1-10"),
+            status: z
+              .enum(["", "incoming", "updated"])
+              .optional()
+              .describe(
+                "Leave empty if owned; 'incoming' if ordered but not arrived; 'updated' if recently re-scored"
+              ),
+            notes: z.string().optional().describe("Styling tips, pairing advice, DA context"),
+          })
+        )
+        .describe("Array of updates, each with an id and the fields to change"),
+    },
+    async ({ updates }) => {
+      const token = process.env.GITHUB_TOKEN;
+      if (!token) throw new Error("GITHUB_TOKEN env var not set");
+
+      if (updates.length === 0) {
+        return { content: [{ type: "text", text: "Nothing to update." }] };
+      }
+
+      const { items, sha } = await fetchCSV(token);
+
+      const updatedIds: number[] = [];
+      const skipped: string[] = [];
+
+      for (const update of updates) {
+        const idx = items.findIndex((i) => i.id === update.id);
+        if (idx === -1) {
+          skipped.push(`ID ${update.id} — not found`);
+          continue;
+        }
+        const existing = items[idx]!;
+        const { color: cleanColor, hex: cleanHex } =
+          update.color !== undefined
+            ? splitColorHex(update.color, update.hex ?? existing.hex)
+            : { color: existing.color, hex: update.hex ?? existing.hex };
+
+        items[idx] = {
+          ...existing,
+          ...(update.name !== undefined && { name: update.name }),
+          ...(update.brand !== undefined && { brand: update.brand }),
+          ...(update.tags !== undefined && {
+            tags: update.tags
+              .map((t) => t.trim())
+              .filter(Boolean)
+              .join("|"),
+          }),
+          ...(update.color !== undefined && { color: cleanColor }),
+          ...((update.color !== undefined || update.hex !== undefined) && { hex: cleanHex }),
+          ...(update.palette_score !== undefined && { score: update.palette_score }),
+          ...(update.status !== undefined && { status: update.status }),
+          ...(update.notes !== undefined && { notes: update.notes }),
+        };
+        updatedIds.push(update.id);
+      }
+
+      if (updatedIds.length > 0) {
+        await pushCSV(
+          token,
+          items,
+          sha,
+          `Update ${updatedIds.length} item${updatedIds.length === 1 ? "" : "s"} in wardrobe via MCP`
+        );
+      }
+
+      const lines: string[] = [];
+      if (updatedIds.length > 0) {
+        lines.push(
+          `Updated ${updatedIds.length} item${updatedIds.length === 1 ? "" : "s"}: ${updatedIds.map((id) => `[${id}]`).join(", ")}`
+        );
+      }
+      if (skipped.length > 0) {
+        lines.push(`Skipped ${skipped.length}:`);
+        skipped.forEach((s) => lines.push(`  ${s}`));
+      }
+
+      return { content: [{ type: "text", text: lines.join("\n") || "Nothing to update." }] };
+    }
+  );
+
+  server.tool(
     "search_wardrobe_items",
     "Search wardrobe items using any combination of free-text query and structured filters. All specified filters must match (AND logic).",
     {
