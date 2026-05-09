@@ -57,7 +57,7 @@ function createServer(): McpServer {
           "Tags for this item. Context: work/casual/active/lounge. Type: top/bottom/dress/outerwear/shoes/accessory. An item worn for both active and casual use gets both tags: ['active','casual']. Custom tags are also allowed."
         ),
       color: z.string().describe("Human-readable color description"),
-      hex: z.string().default("#888888").describe("Hex color code e.g. #C4956A"),
+      hex: z.string().default("#888888").describe("Hex color code e.g. #C4956A — always provide a specific value matching the color; do not leave as #888888"),
       palette_score: z
         .number()
         .int()

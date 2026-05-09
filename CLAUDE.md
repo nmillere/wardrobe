@@ -18,7 +18,7 @@ This is a wardrobe management app for a Deep Autumn (DA) color palette. It has t
 
 **Frontend** (`public/`): Three files — `index.html`, `style.css`, and `app.js`. It uses `localStorage` as its local data store and syncs to a GitHub-hosted CSV via the GitHub API. To use sync, the user provides a personal access token in the GitHub Settings modal. The 64 default wardrobe items are embedded directly in the JS as a seed array.
 
-**MCP server** (`api/mcp.ts`): A Vercel serverless function (60s max duration) that exposes two MCP tools — `list_wardrobe_items` and `add_wardrobe_item`. It reads/writes `wardrobe.csv` directly in the GitHub repo (`nmillere/wardrobe`) using the GitHub API, authenticated via a `GITHUB_TOKEN` environment variable set in Vercel. The transport is `StreamableHTTPServerTransport` from `@modelcontextprotocol/sdk`.
+**MCP server** (`api/mcp.ts`): A Vercel serverless function (60s max duration) that exposes nine MCP tools: `list_wardrobe_items`, `add_wardrobe_item`, `search_wardrobe_items`, `get_wardrobe_item`, `update_wardrobe_item`, `delete_wardrobe_item`, `batch_add_wardrobe_items`, `batch_update_wardrobe_items`, `batch_delete_wardrobe_items`. It reads/writes `wardrobe.csv` directly in the GitHub repo (`nmillere/wardrobe`) using the GitHub API, authenticated via a `GITHUB_TOKEN` environment variable set in Vercel. The transport is `StreamableHTTPServerTransport` from `@modelcontextprotocol/sdk`.
 
 **Data store** (`wardrobe.csv`): The authoritative data source. The CSV format is: `id,tags,brand,name,color,hex,palette_score,status,notes`. The `tags` field is pipe-separated (e.g. `"active|casual"`). The frontend and MCP server both read from and write to this file via GitHub's API.
 
