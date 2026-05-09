@@ -90,6 +90,38 @@ function createServer(): McpServer {
   );
 
   server.tool(
+    "search_wardrobe_items",
+    "Search wardrobe items using any combination of free-text query and structured filters. All specified filters must match (AND logic).",
+    {
+      query: z.string().optional().describe("Case-insensitive text search across name, brand, color, and notes"),
+      tags: z.array(z.string()).optional().describe("Item must have ALL of these tags"),
+      min_score: z.number().int().min(1).max(10).optional().describe("Minimum palette score (inclusive)"),
+      max_score: z.number().int().min(1).max(10).optional().describe("Maximum palette score (inclusive)"),
+      status: z.enum(["", "incoming", "updated"]).optional().describe("Filter by status"),
+    },
+    async ({ query, tags, min_score, max_score, status }) => {
+      const token = process.env.GITHUB_TOKEN;
+      if (!token) throw new Error("GITHUB_TOKEN env var not set");
+      const { items } = await fetchCSV(token);
+      const q = query?.toLowerCase();
+      const filtered = items.filter((i) => {
+        if (q && ![i.name, i.brand, i.color, i.notes].some((v) => v.toLowerCase().includes(q))) return false;
+        if (tags && !tags.every((t) => i.tags.split("|").includes(t))) return false;
+        if (min_score !== undefined && i.score < min_score) return false;
+        if (max_score !== undefined && i.score > max_score) return false;
+        if (status !== undefined && i.status !== status) return false;
+        return true;
+      });
+      const text = filtered
+        .map((i) => `[${i.id}] ${i.brand} ${i.name} | tags: ${i.tags} | ${i.color} | score: ${i.score}/10${i.status ? ` | ${i.status}` : ""}${i.notes ? `\n    ${i.notes}` : ""}`)
+        .join("\n");
+      return {
+        content: [{ type: "text", text: `${filtered.length} result(s):\n\n${text || "(none)"}` }],
+      };
+    }
+  );
+
+  server.tool(
     "get_wardrobe_item",
     "Get a single wardrobe item by its numeric ID.",
     { id: z.number().int().describe("Item ID") },
