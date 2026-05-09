@@ -320,6 +320,56 @@ function createServer(): McpServer {
   );
 
   server.tool(
+    "batch_delete_wardrobe_items",
+    "Permanently remove multiple wardrobe items by ID in a single operation.",
+    {
+      ids: z.array(z.number().int()).describe("Array of item IDs to delete"),
+    },
+    async ({ ids }) => {
+      if (ids.length === 0) {
+        return { content: [{ type: "text", text: "Nothing to delete." }] };
+      }
+      const token = process.env.GITHUB_TOKEN;
+      if (!token) throw new Error("GITHUB_TOKEN env var not set");
+      const { items, sha } = await fetchCSV(token);
+
+      const deleted: WardrobeItem[] = [];
+      const skipped: string[] = [];
+
+      for (const id of ids) {
+        const item = items.find((i) => i.id === id);
+        if (!item) {
+          skipped.push(`ID ${id} — not found`);
+          continue;
+        }
+        deleted.push(item);
+      }
+
+      if (deleted.length > 0) {
+        const deletedIds = new Set(deleted.map((i) => i.id));
+        await pushCSV(
+          token,
+          items.filter((i) => !deletedIds.has(i.id)),
+          sha,
+          `Delete ${deleted.length} item${deleted.length === 1 ? "" : "s"} from wardrobe via MCP`
+        );
+      }
+
+      const lines: string[] = [];
+      if (deleted.length > 0) {
+        lines.push(`Deleted ${deleted.length} item${deleted.length === 1 ? "" : "s"}:`);
+        deleted.forEach((i) => lines.push(`  [${i.id}] ${i.brand} ${i.name}`));
+      }
+      if (skipped.length > 0) {
+        lines.push(`Skipped ${skipped.length}:`);
+        skipped.forEach((s) => lines.push(`  ${s}`));
+      }
+
+      return { content: [{ type: "text", text: lines.join("\n") || "Nothing to delete." }] };
+    }
+  );
+
+  server.tool(
     "search_wardrobe_items",
     "Search wardrobe items using any combination of free-text query and structured filters. All specified filters must match (AND logic).",
     {
