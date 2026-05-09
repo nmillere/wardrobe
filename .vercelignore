@@ -1,0 +1,5 @@
+# Exclusions from Vercel deployment
+
+.claude/
+docs/
+wardrobe.csv
