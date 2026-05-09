@@ -4,6 +4,16 @@ import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/
 import { z } from "zod";
 import { fetchCSV, pushCSV, type WardrobeItem } from "./_csv.js";
 
+function splitColorHex(color: string, hex: string): { color: string; hex: string } {
+  const match = color.match(/(#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3})\b/);
+  if (match) {
+    const extracted = match[1]!;
+    const cleaned = color.replace(extracted, "").trim().replace(/\s{2,}/g, " ");
+    return { color: cleaned, hex: hex === "#888888" ? extracted : hex };
+  }
+  return { color, hex };
+}
+
 function createServer(): McpServer {
   const server = new McpServer({ name: "wardrobe", version: "2.0.0" });
 
@@ -65,13 +75,14 @@ function createServer(): McpServer {
       if (!token) throw new Error("GITHUB_TOKEN env var not set");
       const { items, sha } = await fetchCSV(token);
       const nextId = items.length ? Math.max(...items.map((i) => i.id)) + 1 : 1;
+      const { color: cleanColor, hex: cleanHex } = splitColorHex(color, hex);
       const newItem: WardrobeItem = {
         id: nextId,
         tags: tags.join("|"),
         brand,
         name,
-        color,
-        hex,
+        color: cleanColor,
+        hex: cleanHex,
         score: palette_score,
         status,
         notes,
@@ -163,13 +174,16 @@ function createServer(): McpServer {
       const idx = items.findIndex((i) => i.id === id);
       if (idx === -1) throw new Error(`Item ${id} not found`);
       const existing = items[idx]!;
+      const { color: cleanColor, hex: cleanHex } = color !== undefined
+        ? splitColorHex(color, hex ?? existing.hex)
+        : { color: existing.color, hex: hex ?? existing.hex };
       const updated: WardrobeItem = {
         ...existing,
         ...(name !== undefined && { name }),
         ...(brand !== undefined && { brand }),
         ...(tags !== undefined && { tags: tags.join("|") }),
-        ...(color !== undefined && { color }),
-        ...(hex !== undefined && { hex }),
+        ...(color !== undefined && { color: cleanColor }),
+        ...(color !== undefined || hex !== undefined) && { hex: cleanHex },
         ...(palette_score !== undefined && { score: palette_score }),
         ...(status !== undefined && { status }),
         ...(notes !== undefined && { notes }),
