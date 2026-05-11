@@ -153,6 +153,148 @@ function renderOutfits() {
   renderOutfitTagFilters();
 }
 
+function filterPickerItems() {
+  const q = document.getElementById('of-item-search').value.toLowerCase();
+  const dropdown = document.getElementById('of-item-dropdown');
+  if (!q) { dropdown.style.display = 'none'; return; }
+  const matches = items.filter(i =>
+    !outfitItemIds.has(i.id) &&
+    `${i.name} ${i.brand}`.toLowerCase().includes(q)
+  ).slice(0, 8);
+  if (!matches.length) { dropdown.style.display = 'none'; return; }
+  dropdown.innerHTML = matches.map(i =>
+    `<div class="item-dropdown-row" onclick="selectPickerItem(${i.id})">
+      <span class="swatch" style="background:${h(i.hex)}"></span>
+      <span>${h(i.name)}</span>
+      <span class="item-picker-brand">${h(i.brand)}</span>
+    </div>`
+  ).join('');
+  dropdown.style.display = 'block';
+}
+
+function selectPickerItem(id) {
+  outfitItemIds.add(id);
+  document.getElementById('of-item-search').value = '';
+  document.getElementById('of-item-dropdown').style.display = 'none';
+  renderPickerChips();
+}
+
+function removePickerItem(id) {
+  outfitItemIds.delete(id);
+  renderPickerChips();
+}
+
+function renderPickerChips() {
+  const container = document.getElementById('of-selected-items');
+  if (!outfitItemIds.size) { container.innerHTML = ''; return; }
+  container.innerHTML = [...outfitItemIds].map(id => {
+    const item = items.find(i => i.id === id);
+    if (!item) return '';
+    return `<div class="selected-chip">
+      <span class="swatch" style="background:${h(item.hex)}"></span>
+      <span>${h(item.name)}</span>
+      <button onclick="removePickerItem(${id})">&#215;</button>
+    </div>`;
+  }).join('');
+}
+
+function openLogOutfit() {
+  editingOutfitId = null;
+  outfitItemIds = new Set();
+  document.getElementById('of-date').value = new Date().toISOString().slice(0, 10);
+  document.getElementById('of-rating').value = '';
+  document.getElementById('of-tags').value = '';
+  document.getElementById('of-notes').value = '';
+  document.getElementById('of-item-search').value = '';
+  document.getElementById('of-item-dropdown').style.display = 'none';
+  renderPickerChips();
+  document.getElementById('outfit-modal-title').textContent = 'Log outfit';
+  document.getElementById('outfit-modal-bg').classList.add('open');
+}
+
+function openEditOutfit(id) {
+  const outfit = outfits.find(o => o.id === id);
+  if (!outfit) return;
+  editingOutfitId = id;
+  outfitItemIds = new Set(outfit.item_ids);
+  document.getElementById('of-date').value = outfit.date;
+  document.getElementById('of-rating').value = outfit.rating;
+  document.getElementById('of-tags').value = (outfit.tags || []).join(', ');
+  document.getElementById('of-notes').value = outfit.notes || '';
+  document.getElementById('of-item-search').value = '';
+  document.getElementById('of-item-dropdown').style.display = 'none';
+  renderPickerChips();
+  document.getElementById('outfit-modal-title').textContent = 'Edit outfit';
+  document.getElementById('outfit-modal-bg').classList.add('open');
+}
+
+function closeOutfitModal() {
+  document.getElementById('outfit-modal-bg').classList.remove('open');
+  editingOutfitId = null;
+}
+
+document.getElementById('outfit-modal-bg').addEventListener('click', function(e) {
+  if (e.target === this) closeOutfitModal();
+});
+
+async function saveOutfit() {
+  const date = document.getElementById('of-date').value;
+  if (!date) { alert('Please enter a date.'); return; }
+  if (!outfitItemIds.size) { alert('Please select at least one item.'); return; }
+  const rating = parseInt(document.getElementById('of-rating').value);
+  if (!rating || rating < 1 || rating > 10) { alert('Please enter a rating between 1 and 10.'); return; }
+  const tagsRaw = document.getElementById('of-tags').value;
+  const tags = tagsRaw.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
+  const payload = {
+    date,
+    item_ids: [...outfitItemIds],
+    rating,
+    notes: document.getElementById('of-notes').value.trim(),
+    tags,
+  };
+  try {
+    if (editingOutfitId) {
+      const res = await fetch('/api/outfits', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: editingOutfitId, ...payload }),
+      });
+      if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Save failed'); }
+      const updated = await res.json();
+      const idx = outfits.findIndex(o => o.id === editingOutfitId);
+      if (idx > -1) outfits[idx] = updated;
+      toast('Outfit updated');
+    } else {
+      const res = await fetch('/api/outfits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Save failed'); }
+      const created = await res.json();
+      outfits.push(created);
+      toast('Outfit logged');
+    }
+    closeOutfitModal();
+    renderOutfits();
+  } catch(e) {
+    toast('Save failed: ' + e.message);
+  }
+}
+
+async function deleteOutfit(id) {
+  if (!confirm('Delete this outfit log?')) return;
+  try {
+    const res = await fetch(`/api/outfits?id=${id}`, { method: 'DELETE' });
+    if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Delete failed'); }
+    outfits = outfits.filter(o => o.id !== id);
+    renderOutfits();
+    toast('Outfit deleted');
+  } catch(e) {
+    toast('Delete failed: ' + e.message);
+  }
+}
+
 async function saveItem() {
   const name = document.getElementById('f-name').value.trim();
   if (!name) { alert('Please enter an item name.'); return; }
