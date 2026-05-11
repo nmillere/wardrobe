@@ -20,6 +20,11 @@ let activeScore = 'all';
 let gapOpen = true;
 let formTags = new Set();
 
+let outfits = [];
+let activeOutfitTags = new Set();
+let editingOutfitId = null;
+let outfitItemIds = new Set();
+
 // ── Utilities ────────────────────────────────────────────────────────────────
 
 function sc(s)  { return s >= 8 ? '#3B6D11' : s >= 5 ? '#BA7517' : '#A32D2D'; }
@@ -69,6 +74,83 @@ async function loadItems() {
     document.getElementById('sections-container').innerHTML =
       `<div class="section"><div class="empty">Failed to load wardrobe: ${e.message}</div></div>`;
   }
+}
+
+async function loadOutfits() {
+  try {
+    const res = await fetch('/api/outfits');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    outfits = await res.json();
+    renderOutfits();
+  } catch(e) {
+    document.getElementById('outfit-grid').innerHTML =
+      `<div class="empty">Failed to load outfits: ${e.message}</div>`;
+  }
+}
+
+function switchTab(tab) {
+  const isWardrobe = tab === 'wardrobe';
+  document.getElementById('view-wardrobe').style.display = isWardrobe ? '' : 'none';
+  document.getElementById('view-outfits').style.display = isWardrobe ? 'none' : '';
+  document.getElementById('tab-wardrobe').classList.toggle('active', isWardrobe);
+  document.getElementById('tab-outfits').classList.toggle('active', !isWardrobe);
+  document.querySelector('.header-right').style.display = isWardrobe ? '' : 'none';
+}
+
+function outfitCard(outfit) {
+  const d = new Date(outfit.date + 'T00:00:00');
+  const dateStr = d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+  const swatches = outfit.item_ids.map(id => {
+    const item = items.find(i => i.id === id);
+    return item
+      ? `<span class="outfit-swatch" style="background:${h(item.hex)}" title="${h(item.name)}"></span>`
+      : '';
+  }).join('');
+  const tags = (outfit.tags || []).map(t => `<span class="tag-chip tag-custom">${h(t)}</span>`).join('');
+  const ratingColor = sc(outfit.rating);
+  const notes = outfit.notes ? `<div class="outfit-notes">${h(outfit.notes)}</div>` : '';
+  return `<div class="outfit-card">
+    <div class="outfit-card-date">${dateStr}</div>
+    <div class="outfit-swatches">${swatches}</div>
+    <div class="item-tags">${tags}</div>
+    <div class="outfit-rating" style="color:${ratingColor}">&#9733; ${outfit.rating}/10</div>
+    ${notes}
+    <div class="act-wrap" style="margin-top:.35rem">
+      <button class="act-btn" onclick="openEditOutfit(${outfit.id})">Edit</button>
+      <button class="act-btn del" onclick="deleteOutfit(${outfit.id})">&#10005;</button>
+    </div>
+  </div>`;
+}
+
+function renderOutfitTagFilters() {
+  const allTags = [...new Set(outfits.flatMap(o => o.tags || []))].sort();
+  document.getElementById('outfit-tag-filters').innerHTML = allTags.map(t =>
+    `<button class="filter-tag${activeOutfitTags.has(t) ? ' active' : ''}" onclick="toggleOutfitTag('${h(t)}')">${h(t)}</button>`
+  ).join('');
+}
+
+function toggleOutfitTag(tag) {
+  if (activeOutfitTags.has(tag)) activeOutfitTags.delete(tag);
+  else activeOutfitTags.add(tag);
+  renderOutfits();
+}
+
+function renderOutfits() {
+  const q = (document.getElementById('outfit-search')?.value || '').toLowerCase();
+  const filtered = outfits.filter(o => {
+    const tags = o.tags || [];
+    if (activeOutfitTags.size > 0 && ![...activeOutfitTags].every(t => tags.includes(t))) return false;
+    if (q && !`${o.notes} ${tags.join(' ')}`.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  filtered.sort((a, b) => b.date.localeCompare(a.date));
+  const grid = document.getElementById('outfit-grid');
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty">${outfits.length ? 'No outfits match current filters.' : 'No outfits logged yet. Click + Log outfit to start.'}</div>`;
+  } else {
+    grid.innerHTML = `<div class="outfit-grid">${filtered.map(outfitCard).join('')}</div>`;
+  }
+  renderOutfitTagFilters();
 }
 
 async function saveItem() {
@@ -387,3 +469,4 @@ function exportCSV() {
 // ── Boot ──────────────────────────────────────────────────────────────────────
 
 loadItems();
+loadOutfits();
