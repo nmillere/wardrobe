@@ -259,7 +259,7 @@ async function saveOutfit() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: editingOutfitId, ...payload }),
       });
-      if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Save failed'); }
+      if (!res.ok) { const e = await res.text().then(t => { try { return JSON.parse(t).error || t; } catch { return t; } }); throw new Error(e); }
       const updated = await res.json();
       const idx = outfits.findIndex(o => o.id === editingOutfitId);
       if (idx > -1) outfits[idx] = updated;
@@ -270,7 +270,7 @@ async function saveOutfit() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-      if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Save failed'); }
+      if (!res.ok) { const e = await res.text().then(t => { try { return JSON.parse(t).error || t; } catch { return t; } }); throw new Error(e); }
       const created = await res.json();
       outfits.push(created);
       toast('Outfit logged');
@@ -286,7 +286,7 @@ async function deleteOutfit(id) {
   if (!confirm('Delete this outfit log?')) return;
   try {
     const res = await fetch(`/api/outfits?id=${id}`, { method: 'DELETE' });
-    if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Delete failed'); }
+    if (!res.ok) { const e = await res.text().then(t => { try { return JSON.parse(t).error || t; } catch { return t; } }); throw new Error(e); }
     outfits = outfits.filter(o => o.id !== id);
     renderOutfits();
     toast('Outfit deleted');
