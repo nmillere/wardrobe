@@ -3,3 +3,4 @@ dist/
 docs/
 
 .DS_store
+.superpowers/
