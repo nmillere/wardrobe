@@ -244,7 +244,7 @@ async function saveOutfit() {
   const rating = parseInt(document.getElementById('of-rating').value);
   if (!rating || rating < 1 || rating > 10) { alert('Please enter a rating between 1 and 10.'); return; }
   const tagsRaw = document.getElementById('of-tags').value;
-  const tags = tagsRaw.split(',').map(t => t.trim().toLowerCase()).filter(Boolean);
+  const tags = tagsRaw.split(',').map(t => t.trim().toLowerCase().replace(/[^a-z0-9-]/g, '')).filter(Boolean);
   const payload = {
     date,
     item_ids: [...outfitItemIds],
