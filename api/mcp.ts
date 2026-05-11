@@ -3,6 +3,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { z } from "zod";
 import { fetchCSV, pushCSV, type WardrobeItem } from "./_csv.js";
+import { fetchOutfits, pushOutfits, type OutfitEntry } from "./_outfits.js";
 
 function splitColorHex(color: string, hex: string): { color: string; hex: string } {
   const match = color.match(/(#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3})\b/);
@@ -16,6 +17,20 @@ function splitColorHex(color: string, hex: string): { color: string; hex: string
 
 function createServer(): McpServer {
   const server = new McpServer({ name: "wardrobe", version: "2.0.0" });
+
+  function formatOutfit(o: OutfitEntry, wardrobeItems: WardrobeItem[]): string {
+    const resolvedItems = o.item_ids.map((id) => {
+      const item = wardrobeItems.find((i) => i.id === id);
+      return item
+        ? `[${id}] ${item.brand} ${item.name} (${item.color}, score: ${item.score}/10)`
+        : `[${id}] unknown`;
+    }).join(", ");
+    return [
+      `[${o.id}] ${o.date} | rating: ${o.rating}/10${o.tags.length ? ` | tags: ${o.tags.join(", ")}` : ""}`,
+      `  Items: ${resolvedItems}`,
+      ...(o.notes ? [`  Notes: ${o.notes}`] : []),
+    ].join("\n");
+  }
 
   server.tool(
     "list_wardrobe_items",
@@ -483,6 +498,120 @@ function createServer(): McpServer {
       await pushCSV(token, items.filter((i) => i.id !== id), sha, `Remove ${item.name} from wardrobe via MCP`);
       return {
         content: [{ type: "text", text: `Deleted: [${id}] ${item.brand} ${item.name}` }],
+      };
+    }
+  );
+
+  server.tool(
+    "log_outfit",
+    "Log an outfit you wore. All item_ids must exist in the wardrobe — use list_wardrobe_items to find IDs first.",
+    {
+      date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).describe("Date worn (YYYY-MM-DD)"),
+      item_ids: z.array(z.number().int()).min(1).describe("IDs of wardrobe items worn"),
+      rating: z.number().int().min(1).max(10).describe("How well the outfit worked (1–10)"),
+      tags: z.array(z.string()).default([]).describe("Context/descriptive tags e.g. ['work', 'spring']"),
+      notes: z.string().default("").describe("Reflections on the outfit"),
+    },
+    async ({ date, item_ids, rating, tags, notes }) => {
+      const token = process.env.GITHUB_TOKEN;
+      if (!token) throw new Error("GITHUB_TOKEN env var not set");
+      const { items } = await fetchCSV(token);
+      const missing = item_ids.filter((id) => !items.find((i) => i.id === id));
+      if (missing.length) throw new Error(`Item IDs not found in wardrobe: ${missing.join(", ")}`);
+      const { outfits, sha } = await fetchOutfits(token);
+      const nextId = outfits.length ? Math.max(...outfits.map((o) => o.id)) + 1 : 1;
+      const newOutfit: OutfitEntry = { id: nextId, date, item_ids, rating, notes, tags };
+      await pushOutfits(token, [...outfits, newOutfit], sha, `Log outfit ${date} via MCP`);
+      const itemNames = item_ids
+        .map((id) => {
+          const item = items.find((i) => i.id === id)!;
+          return `${item.brand} ${item.name}`;
+        })
+        .join(", ");
+      return {
+        content: [{
+          type: "text",
+          text: `Logged outfit [${nextId}] on ${date}: ${itemNames} | rating: ${rating}/10${tags.length ? ` | tags: ${tags.join(", ")}` : ""}${notes ? `\n  ${notes}` : ""}`,
+        }],
+      };
+    }
+  );
+
+  server.tool(
+    "list_outfits",
+    "List recent outfit log entries with wardrobe item details resolved inline. Use this to brainstorm new outfits based on what has worked before.",
+    {
+      limit: z.number().int().min(1).max(100).default(20).describe("Max entries to return, newest first"),
+    },
+    async ({ limit }) => {
+      const token = process.env.GITHUB_TOKEN;
+      if (!token) throw new Error("GITHUB_TOKEN env var not set");
+      const [{ outfits }, { items }] = await Promise.all([fetchOutfits(token), fetchCSV(token)]);
+      const sorted = [...outfits].sort((a, b) => b.date.localeCompare(a.date)).slice(0, limit);
+      if (!sorted.length) return { content: [{ type: "text", text: "No outfits logged yet." }] };
+      const text = sorted.map((o) => formatOutfit(o, items)).join("\n\n");
+      return { content: [{ type: "text", text: `${sorted.length} outfit(s):\n\n${text}` }] };
+    }
+  );
+
+  server.tool(
+    "search_outfits",
+    "Filter outfit log entries by tags, item IDs, date range, or rating. Returns matching outfits with item details resolved inline.",
+    {
+      tags: z.array(z.string()).optional().describe("Outfit must include ALL of these tags"),
+      item_ids: z.array(z.number().int()).optional().describe("Outfit must contain at least ONE of these item IDs"),
+      date_from: z.string().optional().describe("Start date inclusive (YYYY-MM-DD)"),
+      date_to: z.string().optional().describe("End date inclusive (YYYY-MM-DD)"),
+      min_rating: z.number().int().min(1).max(10).optional().describe("Minimum rating inclusive"),
+      max_rating: z.number().int().min(1).max(10).optional().describe("Maximum rating inclusive"),
+    },
+    async ({ tags, item_ids, date_from, date_to, min_rating, max_rating }) => {
+      const token = process.env.GITHUB_TOKEN;
+      if (!token) throw new Error("GITHUB_TOKEN env var not set");
+      const [{ outfits }, { items }] = await Promise.all([fetchOutfits(token), fetchCSV(token)]);
+      const filtered = outfits
+        .filter((o) => {
+          if (tags && !tags.every((t) => o.tags.includes(t))) return false;
+          if (item_ids && !item_ids.some((id) => o.item_ids.includes(id))) return false;
+          if (date_from && o.date < date_from) return false;
+          if (date_to && o.date > date_to) return false;
+          if (min_rating !== undefined && o.rating < min_rating) return false;
+          if (max_rating !== undefined && o.rating > max_rating) return false;
+          return true;
+        })
+        .sort((a, b) => b.date.localeCompare(a.date));
+      if (!filtered.length) return { content: [{ type: "text", text: "No matching outfits." }] };
+      const text = filtered.map((o) => formatOutfit(o, items)).join("\n\n");
+      return { content: [{ type: "text", text: `${filtered.length} result(s):\n\n${text}` }] };
+    }
+  );
+
+  server.tool(
+    "get_outfit",
+    "Fetch a single outfit entry by ID with full wardrobe item details resolved.",
+    { id: z.number().int().describe("Outfit ID") },
+    async ({ id }) => {
+      const token = process.env.GITHUB_TOKEN;
+      if (!token) throw new Error("GITHUB_TOKEN env var not set");
+      const [{ outfits }, { items }] = await Promise.all([fetchOutfits(token), fetchCSV(token)]);
+      const outfit = outfits.find((o) => o.id === id);
+      if (!outfit) throw new Error(`Outfit ${id} not found`);
+      const resolvedItems = outfit.item_ids
+        .map((itemId) => {
+          const item = items.find((i) => i.id === itemId);
+          if (!item) return `[${itemId}] unknown`;
+          return `[${itemId}] ${item.brand} ${item.name} | ${item.color} (${item.hex}) | score: ${item.score}/10 | tags: ${item.tags}${item.notes ? `\n      ${item.notes}` : ""}`;
+        })
+        .join("\n  ");
+      return {
+        content: [{
+          type: "text",
+          text: [
+            `[${outfit.id}] ${outfit.date} | rating: ${outfit.rating}/10${outfit.tags.length ? ` | tags: ${outfit.tags.join(", ")}` : ""}`,
+            `  Items:\n  ${resolvedItems}`,
+            ...(outfit.notes ? [`  Notes: ${outfit.notes}`] : []),
+          ].join("\n"),
+        }],
       };
     }
   );
