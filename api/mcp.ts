@@ -616,6 +616,37 @@ function createServer(): McpServer {
     }
   );
 
+  server.tool(
+    "update_outfit",
+    "Update an existing outfit log entry by ID. All item_ids must exist in the wardrobe.",
+    {
+      id: z.number().int().describe("ID of the outfit to update"),
+      date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).describe("Date worn (YYYY-MM-DD)"),
+      item_ids: z.array(z.number().int()).min(1).describe("IDs of wardrobe items worn"),
+      rating: z.number().int().min(1).max(10).describe("How well the outfit worked (1–10)"),
+      tags: z.array(z.string()).default([]).describe("Context/descriptive tags e.g. ['work', 'spring']"),
+      notes: z.string().default("").describe("Reflections on the outfit"),
+    },
+    async ({ id, date, item_ids, rating, tags, notes }) => {
+      const token = process.env.GITHUB_TOKEN;
+      if (!token) throw new Error("GITHUB_TOKEN env var not set");
+      const [{ items }, { outfits, sha }] = await Promise.all([fetchCSV(token), fetchOutfits(token)]);
+      const idx = outfits.findIndex((o) => o.id === id);
+      if (idx === -1) throw new Error(`Outfit ${id} not found`);
+      const missing = item_ids.filter((itemId) => !items.find((i) => i.id === itemId));
+      if (missing.length) throw new Error(`Item IDs not found in wardrobe: ${missing.join(", ")}`);
+      const updated: OutfitEntry = { id, date, item_ids, rating, notes, tags };
+      outfits[idx] = updated;
+      await pushOutfits(token, outfits, sha, `Update outfit ${id} via MCP`);
+      return {
+        content: [{
+          type: "text",
+          text: formatOutfit(updated, items),
+        }],
+      };
+    }
+  );
+
   return server;
 }
 
