@@ -30,6 +30,12 @@
   <div class="metric"><div class="metric-label">Multi-context</div><div class="metric-value" id="m-cross">—</div><div class="metric-sub">items with 2+ contexts</div></div>
 </div>
 
+<div class="tab-bar">
+  <button class="tab active" id="tab-wardrobe" onclick="switchTab('wardrobe')">Wardrobe</button>
+  <button class="tab" id="tab-outfits" onclick="switchTab('outfits')">Outfits</button>
+</div>
+
+<div id="view-wardrobe">
 <div class="toolbar">
   <div class="search-wrap">
     <span class="search-icon">⌕</span>
@@ -82,6 +88,24 @@
     <span class="li"><span class="badge badge-updated">updated</span>recently corrected</span>
   </div>
 </div>
+</div>
+
+<div id="view-outfits" style="display:none">
+  <div class="toolbar" id="outfits-toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="outfit-search" placeholder="Search tags, notes…" oninput="renderOutfits()">
+    </div>
+    <span class="toolbar-sep"></span>
+    <div id="outfit-tag-filters"></div>
+    <button class="hbtn accent" onclick="openLogOutfit()" style="margin-left:auto">+ Log outfit</button>
+  </div>
+  <div class="main">
+    <div class="section">
+      <div id="outfit-grid"><div class="loading">Loading outfits…</div></div>
+    </div>
+  </div>
+</div>
 
 <!-- Add/Edit modal -->
 <div class="modal-bg" id="modal-bg">
@@ -113,6 +137,30 @@
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
       <button class="btn-save" onclick="saveItem()">Save item</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="outfit-modal-bg">
+  <div class="modal">
+    <h3 id="outfit-modal-title">Log outfit</h3>
+    <div class="form-grid">
+      <div class="form-row"><label>Date</label><input id="of-date" type="date"></div>
+      <div class="form-row"><label>Rating (1–10)</label><input id="of-rating" type="number" min="1" max="10" placeholder="8"></div>
+      <div class="form-row form-full">
+        <label>Items worn</label>
+        <div class="item-picker">
+          <input id="of-item-search" type="text" placeholder="Search by name or brand…" oninput="filterPickerItems()" autocomplete="off">
+          <div id="of-item-dropdown" class="item-dropdown" style="display:none"></div>
+          <div id="of-selected-items" class="selected-items"></div>
+        </div>
+      </div>
+      <div class="form-row form-full"><label>Tags (comma-separated)</label><input id="of-tags" type="text" placeholder="work, spring, date-night…"></div>
+      <div class="form-row form-full"><label>Notes</label><textarea id="of-notes" placeholder="How did it feel?"></textarea></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeOutfitModal()">Cancel</button>
+      <button class="btn-save" onclick="saveOutfit()">Save outfit</button>
     </div>
   </div>
 </div>
